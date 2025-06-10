@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">AppC2C</string>
+    <string name="logo">Logo Chợ Nhà</string>
+    <string name="email">Email</string>
+    <string name="PassWord">Mật khẩu</string>
+    <string name="login">Đăng nhập</string>
+    <string name="register">Đăng ký</string>
+    <string name="loginGG">Đăng nhập với Google</string>
+    <string name="forgotPass">Quên mật khẩu?</string>
+    <string name="nenUngDung">Nền ứng dụng Chợ Nhà</string>
+    <string name="back">Quay lại</string>
+    <string name="registerGG">Đăng ký với Google</string>
+    <string name="ng_k">Đăng ký</string>
+    <string name="nh_p_l_i_m_t_kh_u">Nhập lại mật khẩu</string>
+    <string name="email1">Email</string>
+    <string name="m_t_kh_u">Mật khẩu</string>
+    <string name="n_n_t_l_i_m_t_kh_u">Nền đặt lại mật khẩu</string>
+    <string name="nh_p_email_t_l_i_m_t_kh_u">Nhập email để đặt lại mật khẩu</string>
+    <string name="email2">Email</string>
+    <string name="g_i_li_n_k_t_t_l_i_m_t_kh_u">Gửi liên kết đặt lại mật khẩu</string>
+    <string name="quay_l_i">Quay lại</string>
+    <string name="confirmPassword">Nhập lại mật khẩu</string>
+</resources>
