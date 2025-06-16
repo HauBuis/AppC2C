@@ -1,47 +1,74 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="24dp"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/edtEmail"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:src="@drawable/logo"
+    android:scaleType="centerCrop"
+    android:contentDescription="@string/logo" />
 
-    <EditText
-        android:id="@+id/edtPassword"
-        android:hint="Mật khẩu"
-        android:inputType="textPassword"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:padding="24dp"
+        android:gravity="center"
+        android:background="#80FFFFFF">
 
-    <Button
-        android:id="@+id/btnLogin"
-        android:text="Đăng nhập"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:enabled="false"/>
+        <EditText
+            android:id="@+id/edtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
+            android:minHeight="48dp"
+            android:textColorHint="#546E7A"
+            tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
 
-    <Button
-        android:id="@+id/btnRegister"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Đăng ký" />
+        <EditText
+            android:id="@+id/edtPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:hint="@string/PassWord"
+            android:inputType="textPassword"
+            android:minHeight="48dp"
+            android:textColorHint="#546E7A"
+            tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
 
-    <Button
-        android:id="@+id/btnGGLogin"
-        android:text="Đăng nhập với Google"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btnLogin"
+            android:text="@string/login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            tools:ignore="VisualLintButtonSize" />
 
-    <TextView
-        android:id="@+id/tvForgotPass"
-        android:text="Quên mật khẩu?"
-        android:textColor="@android:color/holo_blue_dark"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-</LinearLayout>
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/register"
+            tools:ignore="VisualLintButtonSize" />
+
+        <Button
+            android:id="@+id/btnGGLogin"
+            android:text="@string/loginGG"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="VisualLintButtonSize" />
+
+        <TextView
+            android:id="@+id/tvForgotPass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/forgotPass"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            tools:ignore="TextContrastCheck,TextContrastCheck,TextContrastCheck" />
+    </LinearLayout>
+</FrameLayout>
