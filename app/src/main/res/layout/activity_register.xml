@@ -58,8 +58,10 @@
                 android:id="@+id/btnRegister"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/register"
-                android:enabled="false" />
+                android:text="Đăng ký"
+                android:enabled="true"
+            android:alpha="1.0"
+            android:clickable="true"/>
 
             <Button
                 android:id="@+id/btnGGLogin"

@@ -1,5 +1,5 @@
-<resources>
-    <string name="app_name">AppC2C</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name" tools:ignore="DuplicateDefinition">AppC2C</string>
     <string name="logo">Logo Chợ Nhà</string>
     <string name="email">Email</string>
     <string name="PassWord">Mật khẩu</string>
@@ -20,4 +20,52 @@
     <string name="g_i_li_n_k_t_t_l_i_m_t_kh_u">Gửi liên kết đặt lại mật khẩu</string>
     <string name="quay_l_i">Quay lại</string>
     <string name="confirmPassword">Nhập lại mật khẩu</string>
+    <string name="ng_nh_p">Đăng nhập</string>
+    <string name="email3">Email</string>
+    <string name="m_t_kh_u4">Mật khẩu</string>
+    <string name="hi_n_th_m_t_kh_u">Hiển thị mật khẩu</string>
+    <string name="ng_nh_p4">Đăng nhập</string>
+    <string name="t_o_t_i_kho_n">Tạo tài khoản</string>
+    <string name="qu_n_m_t_kh_u">Quên mật khẩu?</string>
+    <string name="default_web_client_id">1234567890-abc.apps.googleusercontent.com</string>
+    <string name="nh_s_n_ph_m">Ảnh sản phẩm</string>
+    <string name="ch_n_nh">Chọn ảnh</string>
+    <string name="add_product_image">Ảnh sản phẩm</string>
+    <string name="choose_image">Chọn ảnh</string>
+    <string name="product_name">Tên sản phẩm</string>
+    <string name="product_description">Mô tả chi tiết</string>
+    <string name="product_price">Giá (VNĐ)</string>
+    <string name="post_product">Đăng bán</string>
+    <string name="trang_ch">Trang chủ</string>
+    <string name="ng">Đăng</string>
+    <string name="t_i_kho_n">Tài khoản</string>
+    <string name="app_name1">Chợ C2C</string>
+    <string name="search_hint">Tìm sản phẩm…</string>
+    <string name="category">Danh mục</string>
+    <string name="featured_products">Sản phẩm nổi bật</string>
+    <string name="t_i_kho_n1">Tài khoản</string>
+    <string name="avatar">Avatar</string>
+    <string name="nguy_n_v_n_a">Nguyễn Văn A</string>
+    <string name="email_user_example_com">Email: user@example.com</string>
+    <string name="s_t_0909_999_999">SĐT: 0909 999 999</string>
+    <string name="a_ch_123_ng_abc_tp_hcm">Địa chỉ: 123 đường ABC, TP.HCM</string>
+    <string name="ng_xu_t">Đăng xuất</string>
+    <string name="ch_nh_s_a_t_i_kho_n">Chỉnh sửa tài khoản</string>
+    <string name="avatar1">Avatar</string>
+    <string name="nh_n_i_nh_i_di_n">Nhấn để đổi ảnh đại diện</string>
+    <string name="h_t_n">Họ tên</string>
+    <string name="email4">Email</string>
+    <string name="s_i_n_tho_i">Số điện thoại</string>
+    <string name="a_ch">Địa chỉ</string>
+    <string name="l_u_th_ng_tin">Lưu thông tin</string>
+    <string name="t_i_kho_n2">Tài khoản</string>
+    <string name="avatar3">avatar</string>
+    <string name="nguy_n_v_n_a1">Nguyễn Văn A</string>
+    <string name="email_user_example_com1">Email: user@example.com</string>
+    <string name="s_t_0909_999_9991">SĐT: 0909 999 999</string>
+    <string name="a_ch_123_ng_abc_tp_hcm1">Địa chỉ: 123 đường ABC, TP.HCM</string>
+    <string name="ch_nh_s_a_th_ng_tin1">Chỉnh sửa thông tin</string>
+    <string name="ng_xu_t1">Đăng xuất</string>
+
+
 </resources>

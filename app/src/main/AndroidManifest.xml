@@ -15,6 +15,13 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".ForgotPasswordActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".PostProductActivity"
+            tools:ignore="MissingClass" />
+        <activity android:name=".EditProfileActivity" />
+        <activity android:name=".ProductDetailActivity" />
+
+
         <activity
             android:name=".LoginActivity"
             android:exported="true">
