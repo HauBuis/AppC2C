@@ -2,13 +2,15 @@
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/ic_home"
-        android:title="@string/trang_ch" />
+        android:title="@string/nav_home" />
+
     <item
         android:id="@+id/nav_post"
         android:icon="@drawable/ic_add"
-        android:title="@string/ng" />
+        android:title="@string/nav_post" />
+
     <item
         android:id="@+id/nav_account"
         android:icon="@drawable/ic_account"
-        android:title="@string/t_i_kho_n" />
+        android:title="@string/nav_account" />
 </menu>

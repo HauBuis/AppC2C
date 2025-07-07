@@ -26,6 +26,10 @@ android {
         }
     }
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -33,19 +37,33 @@ android {
 }
 
 dependencies {
+    // AndroidX + UI
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
 
+    // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
-    implementation(libs.play.services.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.appcheck.debug)
 
+    // Google Services
+    implementation(libs.play.services.auth)
+    implementation(libs.play.services.location)
+
+    // Glide
+    implementation(libs.glide)
+    annotationProcessor(libs.compiler)
+
+    // Networking
+    implementation(libs.okhttp)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation (libs.glide)
-    annotationProcessor (libs.compiler)
-
 }

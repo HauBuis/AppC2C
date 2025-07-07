@@ -1,71 +1,112 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name" tools:ignore="DuplicateDefinition">AppC2C</string>
+<resources>
+    <!-- App Info -->
+    <string name="app_name">AppC2C</string>
+    <string name="app_name1">Chợ C2C</string>
     <string name="logo">Logo Chợ Nhà</string>
+    <string name="nenUngDung">Nền ứng dụng Chợ Nhà</string>
+
+    <!-- Đăng nhập / Đăng ký -->
     <string name="email">Email</string>
-    <string name="PassWord">Mật khẩu</string>
+    <string name="password">Mật khẩu</string>
     <string name="login">Đăng nhập</string>
     <string name="register">Đăng ký</string>
-    <string name="loginGG">Đăng nhập với Google</string>
-    <string name="forgotPass">Quên mật khẩu?</string>
-    <string name="nenUngDung">Nền ứng dụng Chợ Nhà</string>
+    <string name="login_google">Đăng nhập với Google</string>
+    <string name="register_google">Đăng ký với Google</string>
+    <string name="register_with_google">Đăng ký bằng Google</string>
+    <string name="forgot_password">Quên mật khẩu?</string>
+    <string name="confirm_password">Nhập lại mật khẩu</string>
+    <string name="create_account">Tạo tài khoản</string>
+
+    <!-- Khôi phục mật khẩu -->
+    <string name="reset_password_screen">Nền đặt lại mật khẩu</string>
+    <string name="reset_password_email_prompt">Nhập email để đặt lại mật khẩu</string>
+    <string name="send_reset_link">Gửi liên kết đặt lại mật khẩu</string>
     <string name="back">Quay lại</string>
-    <string name="registerGG">Đăng ký với Google</string>
-    <string name="ng_k">Đăng ký</string>
-    <string name="nh_p_l_i_m_t_kh_u">Nhập lại mật khẩu</string>
-    <string name="email1">Email</string>
-    <string name="m_t_kh_u">Mật khẩu</string>
-    <string name="n_n_t_l_i_m_t_kh_u">Nền đặt lại mật khẩu</string>
-    <string name="nh_p_email_t_l_i_m_t_kh_u">Nhập email để đặt lại mật khẩu</string>
-    <string name="email2">Email</string>
-    <string name="g_i_li_n_k_t_t_l_i_m_t_kh_u">Gửi liên kết đặt lại mật khẩu</string>
-    <string name="quay_l_i">Quay lại</string>
-    <string name="confirmPassword">Nhập lại mật khẩu</string>
-    <string name="ng_nh_p">Đăng nhập</string>
-    <string name="email3">Email</string>
-    <string name="m_t_kh_u4">Mật khẩu</string>
-    <string name="hi_n_th_m_t_kh_u">Hiển thị mật khẩu</string>
-    <string name="ng_nh_p4">Đăng nhập</string>
-    <string name="t_o_t_i_kho_n">Tạo tài khoản</string>
-    <string name="qu_n_m_t_kh_u">Quên mật khẩu?</string>
-    <string name="default_web_client_id">1234567890-abc.apps.googleusercontent.com</string>
-    <string name="nh_s_n_ph_m">Ảnh sản phẩm</string>
-    <string name="ch_n_nh">Chọn ảnh</string>
-    <string name="add_product_image">Ảnh sản phẩm</string>
-    <string name="choose_image">Chọn ảnh</string>
+
+    <!-- Trang chủ -->
+    <string name="trang_chu">Trang chủ</string>
+    <string name="tim_kiem">Tìm kiếm theo từ khóa</string>
+    <string name="search_by_keyword">Tìm kiếm theo từ khóa</string>
+    <string name="search_hint">Tìm sản phẩm…</string>
+    <string name="khoang_cach">Khoảng cách (km)</string>
+    <string name="distance_km">Khoảng cách (km)</string>
+    <string name="gia_toi_thieu">Giá tối thiểu</string>
+    <string name="gia_toi_da">Giá tối đa</string>
+    <string name="min_price">Giá tối thiểu</string>
+    <string name="max_price">Giá tối đa</string>
+    <string name="sample_price">₫100.000</string>
+
+    <!-- Sản phẩm -->
     <string name="product_name">Tên sản phẩm</string>
     <string name="product_description">Mô tả chi tiết</string>
     <string name="product_price">Giá (VNĐ)</string>
-    <string name="post_product">Đăng bán</string>
-    <string name="trang_ch">Trang chủ</string>
-    <string name="ng">Đăng</string>
-    <string name="t_i_kho_n">Tài khoản</string>
-    <string name="app_name1">Chợ C2C</string>
-    <string name="search_hint">Tìm sản phẩm…</string>
-    <string name="category">Danh mục</string>
+    <string name="product_image">Ảnh sản phẩm</string>
+    <string name="product_features">Đặc điểm (VD: màu sắc, kích thước,…)</string>
+    <string name="product_tags">Thẻ phụ (VD: #giamgia, #thoitrang)</string>
+    <string name="product_name_placeholder">%1$s</string>
+    <string name="product_price_placeholder">%1$s đ</string>
+    <string name="product_detail_placeholder">Mô tả chi tiết sản phẩm sẽ được hiển thị tại đây.</string>
+    <string name="default_price">199.000 đ</string>
     <string name="featured_products">Sản phẩm nổi bật</string>
-    <string name="t_i_kho_n1">Tài khoản</string>
-    <string name="avatar">Avatar</string>
-    <string name="nguy_n_v_n_a">Nguyễn Văn A</string>
-    <string name="email_user_example_com">Email: user@example.com</string>
-    <string name="s_t_0909_999_999">SĐT: 0909 999 999</string>
-    <string name="a_ch_123_ng_abc_tp_hcm">Địa chỉ: 123 đường ABC, TP.HCM</string>
-    <string name="ng_xu_t">Đăng xuất</string>
-    <string name="ch_nh_s_a_t_i_kho_n">Chỉnh sửa tài khoản</string>
-    <string name="avatar1">Avatar</string>
-    <string name="nh_n_i_nh_i_di_n">Nhấn để đổi ảnh đại diện</string>
-    <string name="h_t_n">Họ tên</string>
-    <string name="email4">Email</string>
-    <string name="s_i_n_tho_i">Số điện thoại</string>
-    <string name="a_ch">Địa chỉ</string>
-    <string name="l_u_th_ng_tin">Lưu thông tin</string>
-    <string name="t_i_kho_n2">Tài khoản</string>
-    <string name="avatar3">avatar</string>
-    <string name="nguy_n_v_n_a1">Nguyễn Văn A</string>
-    <string name="email_user_example_com1">Email: user@example.com</string>
-    <string name="s_t_0909_999_9991">SĐT: 0909 999 999</string>
-    <string name="a_ch_123_ng_abc_tp_hcm1">Địa chỉ: 123 đường ABC, TP.HCM</string>
-    <string name="ch_nh_s_a_th_ng_tin1">Chỉnh sửa thông tin</string>
-    <string name="ng_xu_t1">Đăng xuất</string>
+    <string name="product_category">Danh mục: %s</string>
+    <string name="product_condition">Tình trạng: %s</string>
+    <string name="product_description_label">Mô tả:</string>
+    <string name="product_description_placeholder">Mô tả sản phẩm chi tiết sẽ hiển thị ở đây.</string>
+    <string name="offer_button">Đề nghị giá</string>
+    <string name="offer_success">Đã gửi đề nghị</string>
+    <string name="offer_error">Lỗi: %s</string>
+    <string name="offer_enter_price_error">Vui lòng nhập giá đề nghị</string>
 
+    <!-- Đăng sản phẩm -->
+    <string name="post_product">Đăng bán</string>
+    <string name="choose_image">Chọn ảnh</string>
+    <string name="choose_images">Chọn ảnh (tối đa 10 ảnh JPEG/PNG)</string>
+    <string name="preview_product">Xem trước</string>
+    <string name="preview_product_title">Xem trước</string>
+    <string name="preview">Xem trước</string>
+    <string name="post">Đăng bán</string>
+
+    <!-- Tài khoản -->
+    <string name="account">Tài khoản</string>
+    <string name="edit_account">Chỉnh sửa tài khoản</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="avatar">Avatar</string>
+    <string name="change_avatar_hint">Nhấn để đổi ảnh đại diện</string>
+    <string name="full_name">Họ tên</string>
+    <string name="phone">Số điện thoại</string>
+    <string name="address">Địa chỉ</string>
+    <string name="save_info">Lưu thông tin</string>
+
+    <!-- Người dùng mẫu -->
+    <string name="user_sample_name">Nguyễn Văn A</string>
+    <string name="user_sample_email">Email: user@example.com</string>
+    <string name="user_sample_phone">SĐT: 0909 999 999</string>
+    <string name="user_sample_address">Địa chỉ: 123 đường ABC, TP.HCM</string>
+    <string name="user_description">Mô tả: Tôi là một người yêu công nghệ.</string>
+    <string name="user_rating">Đánh giá: 4.5 ★</string>
+    <string name="user_rating_hint">Đánh giá (VD: ★★★★☆)</string>
+    <string name="user_sample_name_2">Nguyễn Văn B</string>
+    <string name="user_description_2">Mô tả: Tôi là người thích du lịch và chia sẻ trải nghiệm sống.</string>
+    <string name="user_rating_2">Đánh giá: 4.8 ★</string>
+    <string name="send_message">Gửi tin nhắn</string>
+
+    <!-- Danh mục và tình trạng -->
+    <string name="category">Danh mục</string>
+    <string name="condition">Tình trạng</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Trang chủ</string>
+    <string name="nav_search">Tìm</string>
+    <string name="nav_post">Đăng</string>
+    <string name="nav_notifications">Tin</string>
+    <string name="nav_account">Tài khoản</string>
+
+    <!-- Tài khoản - Hành động -->
+    <string name="deactivate_account">Vô hiệu hóa tài khoản</string>
+    <string name="delete_account">Xóa tài khoản vĩnh viễn</string>
+
+    <!-- Khác -->
+    <string name="todo">TODO</string>
+    <string name="default_web_client_id">986396531175-b7hd0j1v72ktvbnrdnrimos9tppu1bsu.apps.googleusercontent.com</string>
 
 </resources>
