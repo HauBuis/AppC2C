@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chọn lý do báo cáo"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp" />
+
+    <RadioGroup
+        android:id="@+id/radioReasons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton android:id="@+id/reasonFraud" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lừa đảo / gian lận" />
+        <RadioButton android:id="@+id/reasonInappropriate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Nội dung không phù hợp" />
+        <RadioButton android:id="@+id/reasonSpam" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Spam / quảng cáo" />
+        <RadioButton android:id="@+id/reasonOther" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Khác" />
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnSubmitReport"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gửi báo cáo"
+        android:layout_marginTop="24dp" />
+
+</LinearLayout>

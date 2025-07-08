@@ -5,6 +5,11 @@
     <string name="logo">Logo Chợ Nhà</string>
     <string name="nenUngDung">Nền ứng dụng Chợ Nhà</string>
 
+    <!-- Màu sắc mặc định nếu thiếu -->
+    <color name="primary">#3F51B5</color>
+    <color name="primary_dark">#303F9F</color>
+    <color name="accent">#FF4081</color>
+
     <!-- Đăng nhập / Đăng ký -->
     <string name="email">Email</string>
     <string name="password">Mật khẩu</string>
@@ -105,8 +110,13 @@
     <string name="deactivate_account">Vô hiệu hóa tài khoản</string>
     <string name="delete_account">Xóa tài khoản vĩnh viễn</string>
 
+    <!-- Giỏ hàng -->
+    <string name="add_to_cart">Thêm vào giỏ hàng</string>
+    <string name="cart">Giỏ hàng</string>
+    <string name="cart_total">Tổng cộng:</string>
+    <string name="checkout">Thanh toán</string>
+
     <!-- Khác -->
     <string name="todo">TODO</string>
     <string name="default_web_client_id">986396531175-b7hd0j1v72ktvbnrdnrimos9tppu1bsu.apps.googleusercontent.com</string>
-
 </resources>

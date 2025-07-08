@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Quyền cần thiết cho app -->
+    <!-- Quyền cần thiết -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -22,32 +22,45 @@
         android:theme="@style/Theme.AppC2C"
         tools:targetApi="31">
 
-        <activity android:name="com.example.appc2c.RegisterActivity"
-            tools:ignore="MissingClass" />
-        <activity android:name="com.example.appc2c.ForgotPasswordActivity"
-            tools:ignore="MissingClass" />
-        <activity android:name="com.example.appc2c.ProfileActivity"
-            tools:ignore="MissingClass" />
+        <!-- Admin -->
+        <activity android:name="com.example.appc2c.admin.AdminDashboardActivity" />
+        <activity android:name="com.example.appc2c.admin.ReportDetailActivity" />
+        <activity android:name="com.example.appc2c.admin.AdminProductDetailActivity" />
+        <activity android:name="com.example.appc2c.admin.ModerationActivity" />
+        <activity android:name="com.example.appc2c.admin.WarningListActivity" />
 
-        <activity android:name="com.example.appc2c.products.PostProductActivity"
-            tools:ignore="MissingClass" />
-        <activity android:name="com.example.appc2c.products.ProductDetailActivity" />
-        <activity android:name="com.example.appc2c.products.PreviewProductActivity" />
-        <activity android:name="com.example.appc2c.products.ProductListActivity"
-            tools:ignore="Instantiatable" />
-        <activity android:name="com.example.appc2c.products.SearchProductActivity" />
-
-        <activity android:name="com.example.appc2c.profile.EditProfileActivity" />
-        <activity android:name="com.example.appc2c.profile.PublicProfileActivity" />
-
-        <activity
-            android:name="com.example.appc2c.products.MainActivity"
+        <!-- Login -->
+        <activity android:name="com.example.appc2c.login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.example.appc2c.login.RegisterActivity" />
+        <activity android:name="com.example.appc2c.login.ForgotPasswordActivity" />
+
+        <!-- Profile -->
+        <activity android:name="com.example.appc2c.profile.ProfileActivity" />
+        <activity android:name="com.example.appc2c.profile.EditProfileActivity" />
+        <activity android:name="com.example.appc2c.profile.PublicProfileActivity" />
+        <activity android:name="com.example.appc2c.profile.PurchasedActivity" />
+        <activity android:name="com.example.appc2c.profile.SoldActivity" />
+
+        <!-- Products -->
+        <activity android:name="com.example.appc2c.products.MainActivity" />
+        <activity android:name="com.example.appc2c.products.ProductActivity" />
+        <activity android:name="com.example.appc2c.products.PostProductActivity" />
+        <activity android:name="com.example.appc2c.products.PreviewProductActivity" />
+        <activity android:name="com.example.appc2c.products.ProductListActivity" />
+        <activity android:name="com.example.appc2c.products.ProductDetailActivity" />
+        <activity android:name="com.example.appc2c.products.SearchProductActivity" />
+        <activity android:name="com.example.appc2c.products.CartActivity"
+            tools:ignore="MissingClass" />
+        <activity android:name="com.example.appc2c.products.MyOffersActivity"/>
+
+        <!-- Giao dịch -->
+        <activity android:name="com.example.appc2c.models.OfferListActivity" />
 
     </application>
 </manifest>

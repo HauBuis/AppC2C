@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Tên sản phẩm -->
+        <TextView
+            android:id="@+id/txtProductName"
+            android:text="Tên sản phẩm"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Mô tả -->
+        <TextView
+            android:id="@+id/txtProductDesc"
+            android:text="Mô tả sản phẩm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Danh mục + Tình trạng -->
+        <TextView
+            android:id="@+id/txtCategoryCondition"
+            android:text="Danh mục - Tình trạng"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
+
+        <!-- Giá -->
+        <TextView
+            android:id="@+id/txtProductPrice"
+            android:text="Giá"
+            android:textColor="@android:color/holo_red_dark"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Các nút thao tác -->
+        <Button
+            android:id="@+id/btnDeleteProduct"
+            android:text="Xóa sản phẩm"
+            android:layout_marginTop="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/holo_red_dark"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/btnSuspendProduct"
+            android:text="Tạm ngưng sản phẩm"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/holo_orange_dark"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/btnWarnSeller"
+            android:text="Cảnh báo người bán"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+</ScrollView>
