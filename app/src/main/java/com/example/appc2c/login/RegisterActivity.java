@@ -1,5 +1,6 @@
 package com.example.appc2c.login;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
@@ -19,9 +20,10 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText edtEmail, edtPassword;
+    private EditText edtEmail, edtPassword, edtName;
     private FirebaseAuth auth;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         edtEmail = findViewById(R.id.edtEmail);
         edtPassword = findViewById(R.id.edtPassword);
+        edtName = findViewById(R.id.edtName);
         Button btnRegister = findViewById(R.id.btnRegister);
         Button btnBack = findViewById(R.id.btnBack);
 
@@ -42,6 +45,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(v -> {
             String email = edtEmail.getText().toString().trim();
             String password = edtPassword.getText().toString().trim();
+            String name = edtName.getText().toString().trim();
 
             if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 Toast.makeText(this, "Email không hợp lệ", Toast.LENGTH_SHORT).show();
@@ -53,20 +57,26 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
+            if (name.isEmpty()) {
+                Toast.makeText(this, "Vui lòng nhập tên", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             FirebaseUser user = auth.getCurrentUser();
                             if (user != null) {
                                 String uid = user.getUid();
-
-                                // Gửi email xác minh
                                 user.sendEmailVerification();
 
-                                // Tạo document user kèm role
                                 Map<String, Object> userMap = new HashMap<>();
                                 userMap.put("email", email);
+                                userMap.put("name", name);
                                 userMap.put("role", "user");
+                                userMap.put("active", true);
+                                userMap.put("uid", uid);
+                                userMap.put("createdAt", System.currentTimeMillis());
 
                                 FirebaseFirestore.getInstance()
                                         .collection("users")

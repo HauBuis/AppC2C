@@ -39,13 +39,10 @@ public class ProductListActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        // Lấy dữ liệu từ Realtime Database
         databaseRef = FirebaseDatabase.getInstance().getReference("products");
-
         loadProducts();
 
-        
-        adapter.setOnItemClickListener(product -> {
+        adapter.setOnItemActionListener((product, position) -> {
             Intent intent = new Intent(ProductListActivity.this, ProductDetailActivity.class);
             intent.putExtra("name", product.getName());
             intent.putExtra("price", product.getPrice());
@@ -53,7 +50,11 @@ public class ProductListActivity extends AppCompatActivity {
             intent.putExtra("category", product.getCategory());
             intent.putExtra("condition", product.getCondition());
             intent.putExtra("productId", product.getId());
-            intent.putStringArrayListExtra("images", new ArrayList<>(product.getImages()));
+            ArrayList<String> imageList = new ArrayList<>();
+            if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
+                imageList.add(product.getImageUrl());
+            }
+            intent.putStringArrayListExtra("images", imageList);
             startActivity(intent);
         });
     }
@@ -81,4 +82,4 @@ public class ProductListActivity extends AppCompatActivity {
             }
         });
     }
-} 
+}

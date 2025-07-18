@@ -57,15 +57,23 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         holder.tvName.setText(item.getName());
         holder.tvPrice.setText(item.getPrice() + "đ");
 
+        if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
+            Glide.with(context)
+                    .load(item.getImageUrl())
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.ic_launcher_foreground)
+                    .into(holder.imgProduct);
+        } else {
+            holder.imgProduct.setImageResource(R.drawable.ic_launcher_foreground);
+        }
 
-        Glide.with(context).load(item.getImageUrl()).into(holder.imgProduct);
+        holder.cbSelect.setOnCheckedChangeListener(null);
+        holder.cbSelect.setChecked(item.isSelected());
 
         holder.cbSelect.setOnCheckedChangeListener((buttonView, isChecked) -> {
             item.setSelected(isChecked);
             onSelectionChanged.run();
         });
-
-        holder.cbSelect.setChecked(item.isSelected());
     }
 
     @Override

@@ -48,7 +48,7 @@
                     android:padding="12dp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Danh mục (chuỗi này chưa có trong strings.xml) -->
+            <!-- Danh mục -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -82,6 +82,14 @@
                 android:layout_marginTop="8dp"
                 android:nestedScrollingEnabled="false"
                 android:overScrollMode="never" />
+
+            <!-- Nút xem danh sách người bán -->
+            <Button
+                android:id="@+id/btnSellerList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Xem danh sách người bán"
+                android:layout_marginTop="16dp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

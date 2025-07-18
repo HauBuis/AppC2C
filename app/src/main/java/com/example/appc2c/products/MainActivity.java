@@ -1,7 +1,10 @@
 package com.example.appc2c.products;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -62,10 +65,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
         bottomNav.setSelectedItemId(R.id.nav_home);
+
+        // Mở danh sách người bán
+        Button btnSellerList = findViewById(R.id.btnSellerList);
+        btnSellerList.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, SellerListActivity.class));
+        });
     }
 
     private void loadProductsFromFirebase() {
         productsRef.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 productList.clear();
@@ -76,12 +86,12 @@ public class MainActivity extends AppCompatActivity {
                         productList.add(product);
                     }
                 }
-                productAdapter.notifyItemInserted(productList.size() - 1);
-
+                productAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(MainActivity.this, "Lỗi: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

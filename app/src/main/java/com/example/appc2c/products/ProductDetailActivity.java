@@ -1,139 +1,69 @@
 package com.example.appc2c.products;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.appc2c.R;
-import com.example.appc2c.models.Offer;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.example.appc2c.dialogs.ReportDialog;
+import com.google.firebase.database.*;
 
 import java.util.ArrayList;
 
 public class ProductDetailActivity extends AppCompatActivity {
     private ViewPager2 imageSlider;
     private TextView tvName, tvPrice, tvDesc, tvCategory, tvCondition;
-    private Button btnMakeOffer, btnReport;
+    private Button btnMakeOffer, btnReport, btnEdit, btnDelete;
+    private ImageSliderAdapter imageSliderAdapter;
     private String productId;
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
-        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.topAppBar);
-        setSupportActionBar(toolbar);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
-        toolbar.setNavigationOnClickListener(v -> finish());
         initViews();
 
-        loadProductDetails();
-        ArrayList<String> images = getIntent().getStringArrayListExtra("images");
-        if (images == null || images.isEmpty()) {
-            imageSlider.setVisibility(View.GONE);
-            Log.e("ProductDetailActivity", "Image list is null or empty");
-        } else {
-            ImageSliderAdapter adapter = new ImageSliderAdapter(this, images);
-            imageSlider.setAdapter(adapter);
+        findViewById(R.id.topAppBar).setOnClickListener(v -> finish());
+
+        productId = getIntent().getStringExtra("productId");
+        if (productId == null || productId.isEmpty()) {
+            Toast.makeText(this, "Không tìm thấy sản phẩm!", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
         }
 
-        btnMakeOffer.setVisibility(View.VISIBLE);
-
-        btnMakeOffer.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(ProductDetailActivity.this);
-            View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_make_offer, null);
-            builder.setView(dialogView);
-
-            EditText offerPrice = dialogView.findViewById(R.id.offerPrice);
-            EditText offerNote = dialogView.findViewById(R.id.offerNote);
-            Button sendBtn = dialogView.findViewById(R.id.sendOfferBtn);
-
-            AlertDialog dialog = builder.create();
-
-            sendBtn.setOnClickListener(view -> {
-                String priceStr = offerPrice.getText().toString().trim();
-                String noteStr = offerNote.getText().toString().trim();
-
-                if (priceStr.isEmpty()) {
-                    offerPrice.setError("Vui lòng nhập giá đề nghị");
-                    return;
-                }
-
-                int price;
-                try {
-                    price = Integer.parseInt(priceStr);
-                } catch (NumberFormatException e) {
-                    offerPrice.setError("Giá không hợp lệ");
-                    return;
-                }
-
-                String buyerId = FirebaseAuth.getInstance().getUid();
-                if (buyerId == null) {
-                    Toast.makeText(ProductDetailActivity.this, "Không xác định người dùng!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                String offerId = db.collection("offers").document().getId();
-                String sellerId = getIntent().getStringExtra("sellerId");
-                Offer offer = new Offer(
-                        buyerId,
-                        offerId,
-                        noteStr,
-                        productId,
-                        price,
-                        "pending",
-                        sellerId
-                );
-
-                db.collection("offers").document(offerId)
-                        .set(offer)
-                        .addOnSuccessListener(aVoid -> {
-                            dialog.dismiss();
-                            btnMakeOffer.setVisibility(View.GONE);
-                            Toast.makeText(ProductDetailActivity.this,
-                                    "Đã gửi đề nghị thành công!",
-                                    Toast.LENGTH_LONG).show();
-                        })
-                        .addOnFailureListener(e -> Toast.makeText(ProductDetailActivity.this,
-                                "Lỗi khi gửi đề nghị: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show());
-            });
-
-            dialog.show();
-        });
-
-        btnReport.setOnClickListener(v -> {
-            ReportDialog dialog = ReportDialog.newInstance(productId, "product");
-            dialog.show(getSupportFragmentManager(), "reportDialog");
-        });
+        loadProductDetails();
     }
 
     private void initViews() {
         imageSlider = findViewById(R.id.imageSlider);
+        imageSliderAdapter = new ImageSliderAdapter(this, new ArrayList<>());
+        imageSlider.setAdapter(imageSliderAdapter);
+
         tvName = findViewById(R.id.txtDetailName);
         tvPrice = findViewById(R.id.txtDetailPrice);
         tvDesc = findViewById(R.id.txtDetailDesc);
-        btnMakeOffer = findViewById(R.id.btnMakeOffer);
-        btnReport = findViewById(R.id.btnReport);
         tvCategory = findViewById(R.id.txtDetailCategory);
         tvCondition = findViewById(R.id.txtDetailCondition);
+
+        btnMakeOffer = findViewById(R.id.btnMakeOffer);
+        btnReport = findViewById(R.id.btnReport);
+        btnEdit = findViewById(R.id.btnEdit);
+        btnDelete = findViewById(R.id.btnDelete);
     }
 
     @SuppressLint("DefaultLocale")
@@ -141,38 +71,108 @@ public class ProductDetailActivity extends AppCompatActivity {
         try {
             long price = Long.parseLong(priceStr);
             return String.format("%,d", price).replace(",", ".") + " đ";
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             return priceStr + " đ";
         }
     }
 
-    @SuppressLint("SetTextI18n")
+    // Hàm hỗ trợ làm đậm phần nhãn
+    private void setLabelledText(TextView textView, String label, String content) {
+        String fullText = label + content;
+        SpannableString spannable = new SpannableString(fullText);
+        spannable.setSpan(new StyleSpan(Typeface.BOLD), 0, label.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        textView.setText(spannable);
+    }
+
     private void loadProductDetails() {
-        productId = getIntent().getStringExtra("productId");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("products").child(productId);
+        String currentUserId = FirebaseAuth.getInstance().getUid();
 
-        //  Nếu productId null thì đóng Activity
-        if (productId == null || productId.isEmpty()) {
-            Toast.makeText(this, "Không tìm thấy sản phẩm!", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.exists()) {
+                    Toast.makeText(ProductDetailActivity.this, "Sản phẩm không tồn tại!", Toast.LENGTH_SHORT).show();
+                    finish();
+                    return;
+                }
 
-        String name = getIntent().getStringExtra("name");
-        String price = getIntent().getStringExtra("price");
-        String desc = getIntent().getStringExtra("desc");
-        String category = getIntent().getStringExtra("category");
-        String condition = getIntent().getStringExtra("condition");
+                String name = snapshot.child("name").getValue(String.class);
+                String price = snapshot.child("price").getValue(String.class);
+                String desc = snapshot.child("description").getValue(String.class);
+                String category = snapshot.child("category").getValue(String.class);
+                String condition = snapshot.child("condition").getValue(String.class);
+                String sellerId = snapshot.child("sellerId").getValue(String.class);
+                String imageUrl = snapshot.child("imageUrl").getValue(String.class);
 
-        if (name != null) tvName.setText(getString(R.string.product_name_placeholder, name));
-        if (price != null) tvPrice.setText(formatCurrency(price));
-        if (desc != null) tvDesc.setText(desc);
-        if (category != null) tvCategory.setText(getString(R.string.product_category, category));
-        if (condition != null)
-            tvCondition.setText(getString(R.string.product_condition, condition));
+                ArrayList<String> imageList = new ArrayList<>();
 
-        FirebaseFirestore.getInstance()
-                .collection("products")
-                .document(productId)
-                .update("views", com.google.firebase.firestore.FieldValue.increment(1));
+                if (snapshot.child("images").exists()) {
+                    for (DataSnapshot imgSnap : snapshot.child("images").getChildren()) {
+                        String img = imgSnap.getValue(String.class);
+                        if (img != null && img.startsWith("http")) imageList.add(img);
+                    }
+                }
+
+                if (imageList.isEmpty() && imageUrl != null && imageUrl.startsWith("http")) {
+                    imageList.add(imageUrl);
+                }
+
+                if (imageList.isEmpty()) {
+                    imageSlider.setVisibility(View.GONE);
+                } else {
+                    imageSlider.setVisibility(View.VISIBLE);
+                    imageSliderAdapter.updateImages(imageList);
+                }
+
+                // Hiển thị tên và giá với nhãn đậm
+                setLabelledText(tvName, "Tên sản phẩm: ", name != null ? name : "(Không tên)");
+                setLabelledText(tvPrice, "Giá: ", price != null ? formatCurrency(price) : "(Không giá)");
+
+                // Hiển thị danh mục, tình trạng và mô tả giữ nguyên định dạng
+                setLabelledText(tvCategory, "Danh mục: ", category != null ? category : "-");
+                setLabelledText(tvCondition, "Tình trạng: ", condition != null ? condition : "-");
+                tvDesc.setText(desc != null ? desc.replace("\\n", "\n") : "(Không mô tả)");
+
+                if (currentUserId != null && currentUserId.equals(sellerId)) {
+                    btnMakeOffer.setVisibility(View.GONE);
+                    btnReport.setVisibility(View.GONE);
+                    btnEdit.setVisibility(View.VISIBLE);
+                    btnDelete.setVisibility(View.VISIBLE);
+
+                    btnEdit.setOnClickListener(v -> {
+                        Intent intent = new Intent(ProductDetailActivity.this, EditProductActivity.class);
+                        intent.putExtra("productId", productId);
+                        startActivity(intent);
+                    });
+
+                    btnDelete.setOnClickListener(v -> confirmDelete(ref));
+                } else {
+                    btnMakeOffer.setVisibility(View.VISIBLE);
+                    btnReport.setVisibility(View.VISIBLE);
+                    btnEdit.setVisibility(View.GONE);
+                    btnDelete.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(ProductDetailActivity.this, "Lỗi: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void confirmDelete(DatabaseReference ref) {
+        new AlertDialog.Builder(this)
+                .setTitle("Xóa sản phẩm")
+                .setMessage("Bạn có chắc muốn xóa sản phẩm này?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    ref.removeValue().addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "Đã xóa sản phẩm!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
     }
 }

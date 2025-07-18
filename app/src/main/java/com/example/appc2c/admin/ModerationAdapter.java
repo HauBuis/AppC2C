@@ -18,8 +18,8 @@ import com.example.appc2c.products.Product;
 import java.util.List;
 
 public class ModerationAdapter extends RecyclerView.Adapter<ModerationAdapter.ModerationViewHolder> {
-    private Context context;
-    private List<Product> productList;
+    private final Context context;
+    private final List<Product> productList;
 
     public ModerationAdapter(Context context, List<Product> productList) {
         this.context = context;
@@ -38,8 +38,13 @@ public class ModerationAdapter extends RecyclerView.Adapter<ModerationAdapter.Mo
         Product product = productList.get(position);
         holder.tvName.setText(product.getName());
         holder.tvPrice.setText(product.getPrice());
-        Glide.with(context).load(product.getImageUrls().get(0)).into(holder.imgProduct);
-
+        if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
+            Glide.with(context)
+                    .load(product.getImageUrl())
+                    .into(holder.imgProduct);
+        } else {
+            holder.imgProduct.setImageResource(R.drawable.ic_launcher_foreground);
+        }
         // Bổ sung xử lý nút nếu cần
     }
 

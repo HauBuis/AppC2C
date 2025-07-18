@@ -6,17 +6,15 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- Toolbar -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBarPreview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="?attr/colorPrimary"
-        android:title="@string/preview_product"
+        android:title="Xem trước sản phẩm"
         android:titleTextColor="@android:color/white"
         app:navigationIcon="@drawable/ic_arrow_back" />
 
-    <!-- Nội dung hiển thị sản phẩm -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -34,59 +32,57 @@
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:layout_marginBottom="16dp"
-                android:contentDescription="@string/product_image"
+                android:contentDescription="Ảnh sản phẩm"
                 android:scaleType="centerCrop" />
 
-            <TextView
-                android:id="@+id/txtName"
-                android:layout_width="wrap_content"
+            <TextView android:id="@+id/txtName"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/product_name"
+                android:text="Tên sản phẩm:"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:layout_marginBottom="8dp"/>
 
-            <TextView
-                android:id="@+id/txtDescription"
-                android:layout_width="wrap_content"
+            <TextView android:id="@+id/txtDescription"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/product_description"
+                android:text="Mô tả:"
                 android:layout_marginBottom="8dp"/>
 
-            <TextView
-                android:id="@+id/txtPrice"
-                android:layout_width="wrap_content"
+            <TextView android:id="@+id/txtPrice"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/product_price"
+                android:text="Giá:"
                 android:layout_marginBottom="8dp"/>
 
-
-            <TextView
-                android:id="@+id/txtFeatures"
-                android:layout_width="wrap_content"
+            <TextView android:id="@+id/txtFeatures"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/product_features"
+                android:text="Đặc điểm:"
                 android:layout_marginBottom="8dp"/>
 
-            <TextView
-                android:id="@+id/txtTags"
-                android:layout_width="wrap_content"
+            <TextView android:id="@+id/txtTags"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/product_tags"
+                android:text="Thẻ phụ:"
                 android:layout_marginBottom="8dp"/>
 
-            <TextView
-                android:id="@+id/txtCategory"
-                android:layout_width="wrap_content"
+            <TextView android:id="@+id/txtCategory"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/category"
+                android:text="Danh mục:"
                 android:layout_marginBottom="8dp"/>
 
-            <TextView
-                android:id="@+id/txtCondition"
-                android:layout_width="wrap_content"
+            <TextView android:id="@+id/txtCondition"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/condition"
+                android:text="Tình trạng:"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView android:id="@+id/txtLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Vị trí:"
                 android:layout_marginBottom="8dp"/>
         </LinearLayout>
     </ScrollView>

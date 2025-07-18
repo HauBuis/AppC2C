@@ -12,16 +12,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.appc2c.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.ImageViewHolder> {
 
     private final Context context;
-    private final List<String> imageUrls;
+    private List<String> imageUrls = new ArrayList<>();
 
     public ImageSliderAdapter(Context context, List<String> imageUrls) {
         this.context = context;
-        this.imageUrls = imageUrls;
+        if (imageUrls != null) {
+            this.imageUrls = imageUrls;
+        }
+    }
+
+    public void updateImages(List<String> newImages) {
+        this.imageUrls = newImages != null ? newImages : new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -33,7 +41,14 @@ public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, int position) {
-        Glide.with(context).load(imageUrls.get(position)).into(holder.imgSlide);
+        String url = imageUrls.get(position);
+        if (url != null && url.startsWith("http")) {
+            Glide.with(context)
+                    .load(url)
+                    .placeholder(R.drawable.placeholder) // thêm placeholder nếu muốn
+                    .error(R.drawable.ic_launcher_foreground)
+                    .into(holder.imgSlide);
+        }
     }
 
     @Override

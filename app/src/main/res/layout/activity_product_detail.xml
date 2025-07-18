@@ -112,6 +112,25 @@
                 android:backgroundTint="@android:color/holo_red_dark"
                 android:textColor="#FFFFFF"
                 android:layout_marginBottom="32dp" />
+            <Button
+                android:id="@+id/btnEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sửa sản phẩm"
+                android:visibility="gone"
+                android:backgroundTint="@color/purple_500"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="8dp"/>
+
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Xóa sản phẩm"
+                android:visibility="gone"
+                android:backgroundTint="@color/red"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="4dp"/>
 
         </LinearLayout>
     </ScrollView>

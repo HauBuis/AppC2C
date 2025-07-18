@@ -1,138 +1,75 @@
 package com.example.appc2c.products;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class Product {
     private String id;
     private String name;
     private String price;
-    private List<String> imageUrls;
+    private String imageUrl;
     private String description;
     private String category;
     private String condition;
+    private String sellerId;
+    private String location;
+    private boolean selected;
+
+    private boolean allowNegotiation;
     private String features;
     private String tags;
-    private boolean available;
-    private boolean selected;
-    private List<String> images;
-    private String sellerId; // Người bán
+    private ArrayList<String> images;
 
-    // Constructor rút gọn (dùng khi đăng bài)
-    public Product(String name, String price, List<String> imageUrls, String description, boolean available) {
-        this.name = name;
-        this.price = price;
-        this.imageUrls = imageUrls;
-        this.description = description;
-        this.available = available;
-    }
-
-    // Constructor mặc định (cần cho Firebase)
     public Product() {
     }
 
-    // Getter và Setter
-    public String getId() {
-        return id;
-    }
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
-    public String getName() {
-        return name;
-    }
+    // Getter và Setter đầy đủ:
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getPrice() {
-        return price;
-    }
+    public String getPrice() { return price; }
+    public void setPrice(String price) { this.price = price; }
 
-    public void setPrice(String price) {
-        this.price = price;
-    }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
-    public List<String> getImageUrls() {
-        return imageUrls;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public void setImageUrls(List<String> imageUrls) {
-        this.imageUrls = imageUrls;
-    }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getCondition() { return condition; }
+    public void setCondition(String condition) { this.condition = condition; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getSellerId() { return sellerId; }
+    public void setSellerId(String sellerId) { this.sellerId = sellerId; }
 
-    public String getCategory() {
-        return category;
-    }
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
+    public boolean isSelected() { return selected; }
+    public void setSelected(boolean selected) { this.selected = selected; }
 
-    public String getCondition() {
-        return condition;
-    }
+    public boolean isAllowNegotiation() { return allowNegotiation; }
+    public void setAllowNegotiation(boolean allowNegotiation) { this.allowNegotiation = allowNegotiation; }
 
-    public void setCondition(String condition) {
-        this.condition = condition;
-    }
+    public String getFeatures() { return features; }
+    public void setFeatures(String features) { this.features = features; }
 
-    public String getFeatures() {
-        return features;
-    }
+    public String getTags() { return tags; }
+    public void setTags(String tags) { this.tags = tags; }
 
-    public void setFeatures(String features) {
-        this.features = features;
-    }
-
-    public String getTags() {
-        return tags;
-    }
-
-    public void setTags(String tags) {
-        this.tags = tags;
-    }
-
-    public boolean isAvailable() {
-        return available;
-    }
-
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
-
-    public String getSellerId() {
-        return sellerId;
-    }
-
-    public void setSellerId(String sellerId) {
-        this.sellerId = sellerId;
-    }
-    public String getImageUrl() {
-        return (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : "";
-    }
-    public boolean isSelected() {
-        return selected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
-    public List<String> getImages() {
+    public ArrayList<String> getImages() {
         return images;
     }
 
-    public void setImages(List<String> images) {
+    public void setImages(ArrayList<String> images) {
         this.images = images;
     }
+
 }

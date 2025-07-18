@@ -53,66 +53,86 @@
                 android:layout_marginTop="4dp" />
 
             <!-- Họ tên -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Họ và tên:"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="24dp" />
+
             <EditText
                 android:id="@+id/edtName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:autofillHints=""
-                android:hint="@string/full_name"
-                android:inputType="textPersonName"
-                android:layout_marginTop="24dp" />
+                android:hint="Nhập họ và tên"
+                android:inputType="textPersonName" />
 
             <!-- Email -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Email:"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="16dp" />
+
             <EditText
                 android:id="@+id/edtEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:autofillHints=""
-                android:hint="@string/email"
-                android:inputType="textEmailAddress"
-                android:layout_marginTop="8dp" />
+                android:hint="Nhập email"
+                android:inputType="textEmailAddress" />
 
             <!-- Số điện thoại -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Số điện thoại:"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="16dp" />
+
             <EditText
                 android:id="@+id/edtPhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:autofillHints=""
-                android:hint="@string/phone"
-                android:inputType="phone"
-                android:layout_marginTop="8dp" />
+                android:hint="Nhập số điện thoại"
+                android:inputType="phone" />
 
             <!-- Địa chỉ -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Địa chỉ:"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="16dp" />
+
             <EditText
                 android:id="@+id/edtAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:autofillHints=""
-                android:hint="@string/address"
-                android:inputType="textPostalAddress"
-                android:layout_marginTop="8dp" />
+                android:hint="Nhập địa chỉ"
+                android:inputType="textPostalAddress" />
 
             <!-- Mô tả -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mô tả bản thân:"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="16dp" />
+
             <EditText
                 android:id="@+id/edtBio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:autofillHints=""
-                android:hint="@string/user_description"
+                android:hint="Giới thiệu ngắn gọn"
                 android:inputType="textMultiLine"
                 android:minLines="3"
-                android:gravity="top|start"
-                android:layout_marginTop="8dp" />
-
-            <!-- Đánh giá -->
-            <EditText
-                android:id="@+id/edtRating"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:autofillHints=""
-                android:hint="@string/user_rating_hint"
-                android:inputType="text"
-                android:layout_marginTop="8dp" />
+                android:gravity="top|start" />
 
             <!-- Nút lưu -->
             <Button

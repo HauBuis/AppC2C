@@ -7,7 +7,7 @@ public class Warning implements Serializable {
     private String message;
     private long timestamp;
     private String reason;
-    public Warning() {}  // Required for Firebase
+    public Warning() {}
 
     public Warning(String id, String message, long timestamp) {
         this.id = id;

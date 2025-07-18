@@ -21,7 +21,7 @@ public class SoldActivity extends AppCompatActivity {
 
     private ProductAdapter adapter;
     private final List<Product> soldList = new ArrayList<>();
-    private DatabaseReference offersRef;
+    private DatabaseReference productsRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,21 +34,23 @@ public class SoldActivity extends AppCompatActivity {
         recycler.setAdapter(adapter);
 
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        offersRef = FirebaseDatabase.getInstance().getReference("offers");
+        productsRef = FirebaseDatabase.getInstance().getReference("products");
 
-        // Lấy danh sách sản phẩm đã bán
-        offersRef.orderByChild("sellerId").equalTo(currentUserId)
+        loadProductsBySellerId(currentUserId);
+
+        MaterialToolbar toolbar = findViewById(R.id.toolbarSold);
+        toolbar.setNavigationOnClickListener(v -> finish());
+    }
+    private void loadProductsBySellerId(String sellerId) {
+        productsRef.orderByChild("sellerId").equalTo(sellerId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         soldList.clear();
-                        for (DataSnapshot offerSnap : snapshot.getChildren()) {
-                            Boolean accepted = offerSnap.child("accepted").getValue(Boolean.class);
-                            if (accepted != null && accepted) {
-                                Product product = offerSnap.child("product").getValue(Product.class);
-                                if (product != null) {
-                                    soldList.add(product);
-                                }
+                        for (DataSnapshot productSnap : snapshot.getChildren()) {
+                            Product product = productSnap.getValue(Product.class);
+                            if (product != null) {
+                                soldList.add(product);
                             }
                         }
                         adapter.notifyDataSetChanged();
@@ -56,9 +58,8 @@ public class SoldActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
+                        // Handle error if needed
                     }
                 });
-        MaterialToolbar toolbar = findViewById(R.id.toolbarSold);
-        toolbar.setNavigationOnClickListener(v -> finish());
     }
 }
