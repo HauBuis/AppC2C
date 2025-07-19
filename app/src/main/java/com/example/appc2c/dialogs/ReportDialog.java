@@ -46,6 +46,7 @@ public class ReportDialog extends DialogFragment {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_report, null);
         RadioGroup radioGroup = view.findViewById(R.id.radioReasons);
         EditText edtOtherReason = new EditText(getContext());
+        edtOtherReason.setId(View.generateViewId());
         edtOtherReason.setHint("Nhập lý do khác");
         edtOtherReason.setVisibility(View.GONE);
         ((ViewGroup) view).addView(edtOtherReason);

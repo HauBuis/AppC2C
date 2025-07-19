@@ -70,6 +70,11 @@
     <string name="preview_product_title">Xem trước</string>
     <string name="preview">Xem trước</string>
     <string name="post">Đăng bán</string>
+    <string-array name="product_status_options">
+        <item>Đang bán</item>
+        <item>Tạm dừng</item>
+        <item>Đã bán</item>
+    </string-array>
 
     <!-- Tài khoản -->
     <string name="account">Tài khoản</string>

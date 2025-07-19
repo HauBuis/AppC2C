@@ -1,17 +1,19 @@
 package com.example.appc2c.admin;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
-
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appc2c.R;
 import com.example.appc2c.profile.ProfileActivity;
-import com.example.appc2c.admin.ModerationActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -43,6 +45,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
         recyclerReports.setLayoutManager(new LinearLayoutManager(this));
         reportAdapter = new ReportAdapter(this, reportList);
         recyclerReports.setAdapter(reportAdapter);
+
+        reportAdapter.setOnActionListener(report -> {
+            showAdminActionDialog(report);
+        });
     }
 
     private void loadReports() {
@@ -63,7 +69,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     }
 
-
     private void setupBottomNav() {
         BottomNavigationView bottomNav = findViewById(R.id.adminBottomNav);
         bottomNav.setSelectedItemId(R.id.nav_admin_home);
@@ -83,5 +88,44 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
             return false;
         });
+    }
+
+    private void showAdminActionDialog(@NonNull Report report) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Hành động quản trị")
+                .setItems(new String[]{"Cảnh báo", "Tạm ngưng", "Xóa nội dung"}, (dialog, which) -> {
+                    switch (which) {
+                        case 0:
+                            updateUserStatus(report.getTargetId(), "warned");
+                            break;
+                        case 1:
+                            updateUserStatus(report.getTargetId(), "suspended");
+                            break;
+                        case 2:
+                            deleteContent(report.getTargetId());
+                            break;
+                    }
+                })
+                .show();
+    }
+
+    private void updateUserStatus(String userId, String status) {
+        FirebaseFirestore.getInstance().collection("users")
+                .document(userId)
+                .update("status", status)
+                .addOnSuccessListener(unused ->
+                        Toast.makeText(this, "Đã cập nhật trạng thái người dùng", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private void deleteContent(String contentId) {
+        FirebaseFirestore.getInstance().collection("products")
+                .document(contentId)
+                .delete()
+                .addOnSuccessListener(unused ->
+                        Toast.makeText(this, "Đã xóa nội dung", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Lỗi khi xóa nội dung: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }

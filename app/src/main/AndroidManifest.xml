@@ -30,7 +30,7 @@
         <activity android:name="com.example.appc2c.admin.WarningListActivity" />
 
         <!-- Login -->
-        <activity android:name="com.example.appc2c.products.MainActivity"
+        <activity android:name="com.example.appc2c.login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -49,7 +49,7 @@
 
         <!-- Products -->
         <activity android:name=".products.SellerListActivity" />
-<!--        <activity android:name="com.example.appc2c.products.MainActivity" />-->
+        <activity android:name="com.example.appc2c.products.MainActivity" />
         <activity android:name="com.example.appc2c.products.ProductActivity" />
         <activity android:name="com.example.appc2c.products.PostProductActivity" />
         <activity android:name="com.example.appc2c.products.PreviewProductActivity" />
@@ -60,6 +60,7 @@
             tools:ignore="MissingClass" />
         <activity android:name="com.example.appc2c.products.MyOffersActivity"/>
         <activity android:name="com.example.appc2c.products.EditProductActivity"/>
+        <activity android:name="com.example.appc2c.products.MyProductsActivity" />
 
         <!-- Giao dịch -->
         <activity android:name="com.example.appc2c.models.OfferListActivity" />

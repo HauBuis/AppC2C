@@ -3,9 +3,11 @@ package com.example.appc2c.products;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +25,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +41,7 @@ public class EditProductActivity extends AppCompatActivity {
     private EditText edtName, edtPrice, edtDescription, edtCategory, edtCondition;
     private ImageView imgProductEdit;
     private Button btnSave;
+    private Spinner spinnerEditStatus;
     private String productId;
     private static final int PICK_IMAGE_REQUEST = 1001;
     private Uri imageUri;
@@ -54,10 +58,17 @@ public class EditProductActivity extends AppCompatActivity {
         edtCondition = findViewById(R.id.edtProductCondition);
         btnSave = findViewById(R.id.btnSaveProduct);
         imgProductEdit = findViewById(R.id.imgProductEdit);
+        spinnerEditStatus = findViewById(R.id.spinnerEditStatus);
+
+        // Thiết lập Spinner
+        String[] statusOptions = {"\u0110ang b\u00e1n", "T\u1ea1m d\u1eebng", "\u0110\u00e3 b\u00e1n"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, statusOptions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerEditStatus.setAdapter(adapter);
 
         productId = getIntent().getStringExtra("productId");
         if (productId == null || productId.isEmpty()) {
-            Toast.makeText(this, "Không tìm thấy ID sản phẩm!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Kh\u00f4ng t\u00ecm th\u1ea5y ID s\u1ea3n ph\u1ea9m!", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -94,22 +105,38 @@ public class EditProductActivity extends AppCompatActivity {
                                 edtCategory.setText(product.getCategory() != null ? product.getCategory() : "");
                                 edtCondition.setText(product.getCondition() != null ? product.getCondition() : "");
 
+                                // Set status cho spinner
+                                String status = product.getStatus();
+                                if (status != null) {
+                                    switch (status) {
+                                        case "dang_ban":
+                                            spinnerEditStatus.setSelection(0);
+                                            break;
+                                        case "tam_dung":
+                                            spinnerEditStatus.setSelection(1);
+                                            break;
+                                        case "da_ban":
+                                            spinnerEditStatus.setSelection(2);
+                                            break;
+                                    }
+                                }
+
                                 String imageUrl = product.getImageUrl() != null ? product.getImageUrl() : "";
                                 if (!imageUrl.isEmpty()) {
                                     Glide.with(EditProductActivity.this).load(imageUrl).into(imgProductEdit);
                                 }
                             } else {
-                                Toast.makeText(EditProductActivity.this, "Dữ liệu sản phẩm không hợp lệ!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(EditProductActivity.this, "D\u1eef li\u1ec7u s\u1ea3n ph\u1ea9m kh\u00f4ng h\u1ee3p l\u1ec7!", Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            Toast.makeText(EditProductActivity.this, "Sản phẩm không tồn tại!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(EditProductActivity.this, "S\u1ea3n ph\u1ea9m kh\u00f4ng t\u1ed3n t\u1ea1i!", Toast.LENGTH_SHORT).show();
                             finish();
                         }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(EditProductActivity.this, "Lỗi: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(EditProductActivity.this, "L\u1ed7i: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -119,7 +146,7 @@ public class EditProductActivity extends AppCompatActivity {
             try {
                 InputStream inputStream = getContentResolver().openInputStream(imageUri);
                 if (inputStream == null) {
-                    runOnUiThread(() -> Toast.makeText(this, "Không đọc được ảnh!", Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> Toast.makeText(this, "Kh\u00f4ng \u0111\u1ecdc \u0111\u01b0\u1ee3c \u1ea3nh!", Toast.LENGTH_SHORT).show());
                     return;
                 }
 
@@ -150,11 +177,11 @@ public class EditProductActivity extends AppCompatActivity {
                     String imageUrl = new JSONObject(response.body().string()).getString("secure_url");
                     runOnUiThread(() -> saveProductChanges(imageUrl));
                 } else {
-                    runOnUiThread(() -> Toast.makeText(this, "Lỗi upload ảnh!", Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> Toast.makeText(this, "L\u1ed7i upload \u1ea3nh!", Toast.LENGTH_SHORT).show());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                runOnUiThread(() -> Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(this, "L\u1ed7i: " + e.getMessage(), Toast.LENGTH_SHORT).show());
             }
         }).start();
     }
@@ -167,6 +194,19 @@ public class EditProductActivity extends AppCompatActivity {
         updates.put("category", edtCategory.getText().toString().trim());
         updates.put("condition", edtCondition.getText().toString().trim());
 
+        String selectedStatus = spinnerEditStatus.getSelectedItem().toString();
+        switch (selectedStatus) {
+            case "\u0110ang b\u00e1n":
+                updates.put("status", "dang_ban");
+                break;
+            case "T\u1ea1m d\u1eebng":
+                updates.put("status", "tam_dung");
+                break;
+            case "\u0110\u00e3 b\u00e1n":
+                updates.put("status", "da_ban");
+                break;
+        }
+
         if (imageUrl != null) {
             updates.put("imageUrl", imageUrl);
         }
@@ -175,11 +215,11 @@ public class EditProductActivity extends AppCompatActivity {
                 .child(productId)
                 .updateChildren(updates)
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Đã cập nhật sản phẩm!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "\u0110\u00e3 c\u1eadp nh\u1eadt s\u1ea3n ph\u1ea9m!", Toast.LENGTH_SHORT).show();
                     finish();
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Lỗi cập nhật: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "L\u1ed7i c\u1eadp nh\u1eadt: " + e.getMessage(), Toast.LENGTH_SHORT).show()
                 );
     }
 

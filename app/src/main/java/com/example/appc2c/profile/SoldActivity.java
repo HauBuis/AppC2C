@@ -49,7 +49,8 @@ public class SoldActivity extends AppCompatActivity {
                         soldList.clear();
                         for (DataSnapshot productSnap : snapshot.getChildren()) {
                             Product product = productSnap.getValue(Product.class);
-                            if (product != null) {
+                            if (product != null && "da_ban".equals(product.getStatus())) {
+                                product.setId(productSnap.getKey());
                                 soldList.add(product);
                             }
                         }

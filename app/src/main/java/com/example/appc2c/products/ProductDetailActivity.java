@@ -18,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.appc2c.R;
+import com.example.appc2c.dialogs.ReportDialog;
+import com.example.appc2c.products.MakeOfferDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 
@@ -64,6 +66,11 @@ public class ProductDetailActivity extends AppCompatActivity {
         btnReport = findViewById(R.id.btnReport);
         btnEdit = findViewById(R.id.btnEdit);
         btnDelete = findViewById(R.id.btnDelete);
+
+        btnMakeOffer.setFocusable(true);
+        btnMakeOffer.setClickable(true);
+        btnReport.setFocusable(true);
+        btnReport.setClickable(true);
     }
 
     @SuppressLint("DefaultLocale")
@@ -76,7 +83,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
     }
 
-    // Hàm hỗ trợ làm đậm phần nhãn
     private void setLabelledText(TextView textView, String label, String content) {
         String fullText = label + content;
         SpannableString spannable = new SpannableString(fullText);
@@ -125,11 +131,8 @@ public class ProductDetailActivity extends AppCompatActivity {
                     imageSliderAdapter.updateImages(imageList);
                 }
 
-                // Hiển thị tên và giá với nhãn đậm
                 setLabelledText(tvName, "Tên sản phẩm: ", name != null ? name : "(Không tên)");
                 setLabelledText(tvPrice, "Giá: ", price != null ? formatCurrency(price) : "(Không giá)");
-
-                // Hiển thị danh mục, tình trạng và mô tả giữ nguyên định dạng
                 setLabelledText(tvCategory, "Danh mục: ", category != null ? category : "-");
                 setLabelledText(tvCondition, "Tình trạng: ", condition != null ? condition : "-");
                 tvDesc.setText(desc != null ? desc.replace("\\n", "\n") : "(Không mô tả)");
@@ -152,6 +155,16 @@ public class ProductDetailActivity extends AppCompatActivity {
                     btnReport.setVisibility(View.VISIBLE);
                     btnEdit.setVisibility(View.GONE);
                     btnDelete.setVisibility(View.GONE);
+
+                    btnMakeOffer.setOnClickListener(v -> {
+                        MakeOfferDialog dialog = new MakeOfferDialog(ProductDetailActivity.this, productId);
+                        dialog.show();
+                    });
+
+                    btnReport.setOnClickListener(v -> {
+                        ReportDialog.newInstance(productId, "product")
+                                .show(getSupportFragmentManager(), "report_dialog");
+                    });
                 }
             }
 

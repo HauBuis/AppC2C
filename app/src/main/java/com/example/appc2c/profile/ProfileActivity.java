@@ -1,6 +1,5 @@
 package com.example.appc2c.profile;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.example.appc2c.R;
 import com.example.appc2c.login.LoginActivity;
 import com.example.appc2c.products.MainActivity;
+import com.example.appc2c.products.MyProductsActivity;
 import com.example.appc2c.products.PostProductActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +33,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        // Ánh xạ
         txtName = findViewById(R.id.txtName);
         txtEmail = findViewById(R.id.txtEmail);
         txtPhone = findViewById(R.id.txtPhone);
@@ -45,14 +46,31 @@ public class ProfileActivity extends AppCompatActivity {
         Button btnLogout = findViewById(R.id.btnLogout);
         Button btnDeactivate = findViewById(R.id.btnDeactivate);
         Button btnDeleteAccount = findViewById(R.id.btnDeleteAccount);
+        Button btnSold = findViewById(R.id.btnSold);
+        Button btnPurchased = findViewById(R.id.btnPurchased);
 
+        // Mở danh sách sản phẩm của tôi
+        btnSold.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, MyProductsActivity.class);
+            startActivity(intent);
+        });
+
+        // Mở danh sách sản phẩm đã mua
+        btnPurchased.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, PurchasedActivity.class);
+            startActivity(intent);
+        });
+
+        // Chức năng chỉnh sửa và đăng xuất
         btnEdit.setOnClickListener(v -> openEditProfile());
         btnLogout.setOnClickListener(v -> logoutUser());
 
+        // Bottom Nav
         BottomNavigationView bottomNav = findViewById(R.id.bottomNav);
         bottomNav.setSelectedItemId(R.id.nav_account);
         bottomNav.setOnItemSelectedListener(item -> handleNavigation(item.getItemId()));
 
+        // Tùy chọn tài khoản
         btnDeactivate.setOnClickListener(v -> showDeactivateDialog());
         btnDeleteAccount.setOnClickListener(v -> showDeleteAccountDialog());
     }
@@ -77,11 +95,12 @@ public class ProfileActivity extends AppCompatActivity {
                             txtPhone.setText("SĐT: " + documentSnapshot.getString("phone"));
                             txtAddress.setText("Địa chỉ: " + documentSnapshot.getString("address"));
                             txtBio.setText("Mô tả: " + documentSnapshot.getString("bio"));
+                            txtRating.setText("Đánh giá: " + documentSnapshot.getString("rating"));
                             avatarUriString = documentSnapshot.getString("avatar");
                             if (avatarUriString != null && !avatarUriString.isEmpty()) {
                                 Glide.with(this).load(Uri.parse(avatarUriString)).into(imgAvatar);
                             } else {
-                                imgAvatar.setImageResource(R.drawable.ic_account); // Ảnh mặc định
+                                imgAvatar.setImageResource(R.drawable.ic_account);
                             }
                         }
                     });
@@ -90,7 +109,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void openEditProfile() {
         Intent intent = new Intent(this, EditProfileActivity.class);
-        intent.putExtra("name", txtName.getText().toString().replace("Email: ", ""));
+        intent.putExtra("name", txtName.getText().toString());
         intent.putExtra("email", txtEmail.getText().toString().replace("Email: ", ""));
         intent.putExtra("phone", txtPhone.getText().toString().replace("SĐT: ", ""));
         intent.putExtra("address", txtAddress.getText().toString().replace("Địa chỉ: ", ""));
@@ -108,10 +127,14 @@ public class ProfileActivity extends AppCompatActivity {
     private boolean handleNavigation(int id) {
         if (id == R.id.nav_home) {
             startActivity(new Intent(this, MainActivity.class));
+            return true;
         } else if (id == R.id.nav_post) {
             startActivity(new Intent(this, PostProductActivity.class));
+            return true;
+        } else if (id == R.id.nav_account) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     private void showDeactivateDialog() {
@@ -141,11 +164,10 @@ public class ProfileActivity extends AppCompatActivity {
                     .update("active", false)
                     .addOnSuccessListener(unused -> {
                         Toast.makeText(this, "Đã vô hiệu hóa tài khoản", Toast.LENGTH_SHORT).show();
-                        FirebaseAuth.getInstance().signOut();
-                        startActivity(new Intent(this, LoginActivity.class));
-                        finish();
+                        logoutUser();
                     })
-                    .addOnFailureListener(e -> Toast.makeText(this, "Lỗi vô hiệu hóa: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         }
     }
 
@@ -153,11 +175,10 @@ public class ProfileActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             user.delete().addOnSuccessListener(unused -> {
-                FirebaseAuth.getInstance().signOut();
                 Toast.makeText(this, "Tài khoản đã bị xóa!", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this, LoginActivity.class));
-                finish();
-            }).addOnFailureListener(e -> Toast.makeText(this, "Lỗi khi xoá: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                logoutUser();
+            }).addOnFailureListener(e ->
+                    Toast.makeText(this, "Lỗi khi xoá: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         }
     }
 }

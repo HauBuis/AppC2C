@@ -18,6 +18,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -218,6 +219,7 @@ public class PostProductActivity extends AppCompatActivity {
         productData.put("features", "màu vàng");
         productData.put("tags", "dientu");
         productData.put("imageUrl", cloudinaryImageUrl);
+        productData.put("sellerId", FirebaseAuth.getInstance().getUid());
         Map<String, Object> imagesMap = new HashMap<>();
         imagesMap.put("0", cloudinaryImageUrl);
         productData.put("images", imagesMap);

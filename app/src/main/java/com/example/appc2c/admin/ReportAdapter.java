@@ -23,6 +23,15 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportView
 
     private final Context context;
     private final List<Report> reportList;
+    private OnActionListener actionListener;
+
+    public interface OnActionListener {
+        void onAction(Report report);
+    }
+
+    public void setOnActionListener(OnActionListener listener) {
+        this.actionListener = listener;
+    }
 
     public ReportAdapter(Context context, List<Report> reportList) {
         this.context = context;
@@ -93,6 +102,10 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportView
             intent.putExtra("targetId", report.getTargetId());
             intent.putExtra("type", report.getType());
             context.startActivity(intent);
+
+            if (actionListener != null) {
+                actionListener.onAction(report);
+            }
         });
     }
 

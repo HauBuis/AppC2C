@@ -46,7 +46,24 @@
             android:textStyle="bold"
             android:layout_marginTop="4dp" />
 
-        <!-- Số lượt đề nghị -->
+        <!-- Trạng thái sản phẩm -->
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đang bán"
+            android:textColor="#FF5722"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp" />
+        <Spinner
+            android:id="@+id/spinnerStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:visibility="gone"
+            android:layout_gravity="end" />
+
+        <!-- Lượt đề nghị -->
         <TextView
             android:id="@+id/tvOfferCount"
             android:layout_width="match_parent"
@@ -55,6 +72,26 @@
             android:textSize="12sp"
             android:textColor="@android:color/darker_gray"
             android:layout_marginTop="4dp" />
+
+        <!-- Lượt xem -->
+        <TextView
+            android:id="@+id/tvViews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lượt xem: 0"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginTop="2dp" />
+
+        <!-- Lượt tương tác -->
+        <TextView
+            android:id="@+id/tvInteractions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tương tác: 0"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginTop="2dp" />
 
         <!-- Nút thêm vào giỏ hàng -->
         <ImageView
@@ -67,7 +104,16 @@
             android:layout_gravity="end"
             android:padding="4dp" />
 
-        <!-- Nút xóa -->
+        <!-- Nút sửa sản phẩm -->
+        <Button
+            android:id="@+id/btnEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sửa"
+            android:layout_marginTop="4dp"
+            android:layout_gravity="end" />
+
+        <!-- Nút xóa sản phẩm -->
         <Button
             android:id="@+id/deleteButton"
             android:layout_width="wrap_content"

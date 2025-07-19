@@ -132,7 +132,7 @@
                 android:minWidth="220dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Sản phẩm đã bán"
+                android:text="Sản phẩm của bạn"
                 android:backgroundTint="@color/teal_700"
                 android:textColor="@android:color/white" />
             <Button
