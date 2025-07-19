@@ -113,14 +113,17 @@
             android:layout_marginTop="4dp"
             android:layout_gravity="end" />
 
-        <!-- Nút xóa sản phẩm -->
         <Button
-            android:id="@+id/deleteButton"
+            android:id="@+id/btnViewOffers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Xóa"
-            android:layout_gravity="end"
-            android:layout_marginTop="4dp" />
+            android:text="Xem đề nghị"
+            android:layout_gravity="center_horizontal"
+            android:backgroundTint="@color/purple_500"
+            android:textColor="@android:color/white"
+            android:visibility="gone" />
+
+
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

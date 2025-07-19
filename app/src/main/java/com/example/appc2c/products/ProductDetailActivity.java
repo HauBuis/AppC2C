@@ -19,7 +19,6 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.appc2c.R;
 import com.example.appc2c.dialogs.ReportDialog;
-import com.example.appc2c.products.MakeOfferDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 
@@ -39,8 +38,10 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         initViews();
 
+        // Đóng activity khi click topAppBar
         findViewById(R.id.topAppBar).setOnClickListener(v -> finish());
 
+        // Lấy id sản phẩm từ Intent
         productId = getIntent().getStringExtra("productId");
         if (productId == null || productId.isEmpty()) {
             Toast.makeText(this, "Không tìm thấy sản phẩm!", Toast.LENGTH_SHORT).show();
@@ -76,7 +77,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     @SuppressLint("DefaultLocale")
     private String formatCurrency(String priceStr) {
         try {
-            long price = Long.parseLong(priceStr);
+            long price = Long.parseLong(priceStr.replace(",", ""));
             return String.format("%,d", price).replace(",", ".") + " đ";
         } catch (Exception e) {
             return priceStr + " đ";
@@ -137,6 +138,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 setLabelledText(tvCondition, "Tình trạng: ", condition != null ? condition : "-");
                 tvDesc.setText(desc != null ? desc.replace("\\n", "\n") : "(Không mô tả)");
 
+                // Nếu là chủ sản phẩm
                 if (currentUserId != null && currentUserId.equals(sellerId)) {
                     btnMakeOffer.setVisibility(View.GONE);
                     btnReport.setVisibility(View.GONE);

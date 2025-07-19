@@ -2,6 +2,7 @@ package com.example.appc2c.products;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -25,17 +26,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.appc2c.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
 public class SearchProductActivity extends AppCompatActivity {
 
-    private EditText edtSearch, edtDistance, edtMinPrice, edtMaxPrice, edtCustomLocation;
+    private EditText edtSearch, edtDistance, edtMinPrice, edtMaxPrice;
     private Spinner spinnerCategory, spinnerCondition, spinnerSort;
     private ProductAdapter adapter;
     private final List<Product> productList = new ArrayList<>();
@@ -51,7 +57,6 @@ public class SearchProductActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search_product);
 
         edtSearch = findViewById(R.id.edtSearch);
-        edtCustomLocation = findViewById(R.id.edtCustomLocation);
         edtDistance = findViewById(R.id.edtDistance);
         edtMinPrice = findViewById(R.id.edtMinPrice);
         edtMaxPrice = findViewById(R.id.edtMaxPrice);
@@ -67,27 +72,50 @@ public class SearchProductActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         spinnerCategory.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
-                new String[]{"Tất cả", "Điện thoại", "Laptop", "Thời trang"}));
+                new String[]{"Tất cả", "Điện thoại", "Laptop", "Phụ kiện"}));
         spinnerCondition.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
                 new String[]{"Tất cả", "Mới", "Đã sử dụng"}));
         spinnerSort.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item,
                 new String[]{"Liên quan", "Mới nhất", "Giá tăng dần", "Giá giảm dần"}));
 
-        edtSearch.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (searchRunnable != null) searchHandler.removeCallbacks(searchRunnable);
-                searchRunnable = () -> searchProducts();
-                searchHandler.postDelayed(searchRunnable, 200);
+        // Nếu có keyword truyền vào thì tìm kiếm luôn
+        String initKeyword = getIntent().getStringExtra("keyword");
+        if (initKeyword != null && !initKeyword.isEmpty()) {
+            edtSearch.setText(initKeyword);
+            searchProducts();
+        }
+
+        // Hiện gợi ý khi click vào ô tìm kiếm mà chưa nhập gì
+        edtSearch.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && edtSearch.getText().toString().trim().isEmpty()) {
+                showSuggestions();
             }
-            @Override public void afterTextChanged(Editable s) {}
         });
+
+        // Auto lọc cho tất cả các EditText liên quan
+        addAutoSearch(edtSearch);
+        addAutoSearch(edtMinPrice);
+        addAutoSearch(edtMaxPrice);
+        addAutoSearch(edtDistance);
 
         spinnerCategory.setOnItemSelectedListener(new SimpleItemSelectedListener(this::searchProducts));
         spinnerCondition.setOnItemSelectedListener(new SimpleItemSelectedListener(this::searchProducts));
         spinnerSort.setOnItemSelectedListener(new SimpleItemSelectedListener(this::searchProducts));
 
         requestLocation();
+    }
+
+    // Hàm gắn auto lọc sau 200ms cho EditText
+    private void addAutoSearch(EditText edt) {
+        edt.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (searchRunnable != null) searchHandler.removeCallbacks(searchRunnable);
+                searchRunnable = SearchProductActivity.this::searchProducts;
+                searchHandler.postDelayed(searchRunnable, 200);
+            }
+            @Override public void afterTextChanged(Editable s) {}
+        });
     }
 
     private void requestLocation() {
@@ -100,88 +128,217 @@ public class SearchProductActivity extends AppCompatActivity {
         }
     }
 
+    private void showSuggestions() {
+        SharedPreferences prefs = getSharedPreferences("viewed_products", MODE_PRIVATE);
+        String ids = prefs.getString("history", "");
+        if (!ids.isEmpty()) {
+            suggestByHistory();
+            return;
+        }
+        String category = spinnerCategory.getSelectedItem().toString();
+        if (!category.equals("Tất cả")) {
+            suggestByCategory();
+            return;
+        }
+        suggestPopularOrNearby();
+    }
+
+    // Gợi ý theo danh mục sản phẩm
+    private void suggestByCategory() {
+        String category = spinnerCategory.getSelectedItem().toString();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("products");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Product> suggestedList = new ArrayList<>();
+                for (DataSnapshot snap : snapshot.getChildren()) {
+                    Product p = snap.getValue(Product.class);
+                    if (p == null) continue;
+                    if (!category.equals("Tất cả") && !category.equals(p.getCategory())) continue;
+                    suggestedList.add(p);
+                }
+                // Sort theo views giảm dần, lấy tối đa 10
+                Collections.sort(suggestedList, (a, b) -> Integer.compare(b.getViews(), a.getViews()));
+                if (suggestedList.size() > 10)
+                    suggestedList = suggestedList.subList(0, 10);
+                adapter.setSuggestedList(suggestedList, "Gợi ý theo danh mục");
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+
+    // Gợi ý sản phẩm đã xem (cá nhân hóa)
+    private void suggestByHistory() {
+        SharedPreferences prefs = getSharedPreferences("viewed_products", MODE_PRIVATE);
+        String ids = prefs.getString("history", "");
+        if (ids.isEmpty()) return;
+        String[] idArr = ids.split(",");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("products");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Product> historyList = new ArrayList<>();
+                for (String id : idArr) {
+                    DataSnapshot snap = snapshot.child(id);
+                    Product p = snap.getValue(Product.class);
+                    if (p != null) historyList.add(p);
+                }
+                adapter.setSuggestedList(historyList, "Sản phẩm đã xem");
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+
+    // Gợi ý sản phẩm phổ biến & gần vị trí user
+    private void suggestPopularOrNearby() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("products");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Product> popularList = new ArrayList<>();
+                for (DataSnapshot snap : snapshot.getChildren()) {
+                    Product p = snap.getValue(Product.class);
+                    if (p == null) continue;
+                    if (currentLocation != null && p.getLat() != null && p.getLng() != null) {
+                        float[] result = new float[1];
+                        Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), p.getLat(), p.getLng(), result);
+                        if (result[0] <= 5000) { // dưới 5km
+                            popularList.add(p);
+                        }
+                    } else {
+                        popularList.add(p);
+                    }
+                }
+                // Sort views giảm dần, lấy tối đa 10
+                Collections.sort(popularList, (a, b) -> Integer.compare(b.getViews(), a.getViews()));
+                if (popularList.size() > 10)
+                    popularList = popularList.subList(0, 10);
+                adapter.setSuggestedList(popularList, "Sản phẩm phổ biến & gần bạn");
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+
+    // === Tìm kiếm chính ===
     @SuppressLint("NotifyDataSetChanged")
     private void searchProducts() {
         String keyword = edtSearch.getText().toString().trim().toLowerCase();
-        String customLocation = edtCustomLocation.getText().toString().trim();
-        if (!customLocation.isEmpty()) {
-            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-            try {
-                List<Address> addresses = geocoder.getFromLocationName(customLocation, 1);
-                if (!addresses.isEmpty()) {
-                    double lat = addresses.get(0).getLatitude();
-                    double lng = addresses.get(0).getLongitude();
-                    currentLocation = new Location("custom");
-                    currentLocation.setLatitude(lat);
-                    currentLocation.setLongitude(lng);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Không tìm được vị trí", Toast.LENGTH_SHORT).show();
-            }
-        }
 
         String category = spinnerCategory.getSelectedItem().toString();
         String condition = spinnerCondition.getSelectedItem().toString();
         String sort = spinnerSort.getSelectedItem().toString();
+
+        // Xử lý khoảng cách an toàn, chỉ gán final 1 lần!
         String distanceStr = edtDistance.getText().toString().trim();
-        float maxDistance = distanceStr.isEmpty() ? 5000 : Float.parseFloat(distanceStr) * 1000;
+        float tempDistance = 5000;
+        try {
+            if (!distanceStr.isEmpty()) {
+                tempDistance = Float.parseFloat(distanceStr) * 1000;
+                if (tempDistance < 0) tempDistance = 5000;
+            }
+        } catch (Exception e) {
+            tempDistance = 5000;
+        }
+        final float maxDistance = tempDistance;
 
         String minStr = edtMinPrice.getText().toString().trim();
         String maxStr = edtMaxPrice.getText().toString().trim();
         long min = minStr.isEmpty() ? 0 : Long.parseLong(minStr);
         long max = maxStr.isEmpty() ? Long.MAX_VALUE : Long.parseLong(maxStr);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query query = db.collection("products");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("products");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                productList.clear();
+                List<Product> filteredList = new ArrayList<>();
+                for (DataSnapshot snap : snapshot.getChildren()) {
+                    Product p = snap.getValue(Product.class);
+                    if (p == null) continue;
 
-        if (!category.equals("Tất cả")) query = query.whereEqualTo("category", category);
-        if (!condition.equals("Tất cả")) query = query.whereEqualTo("condition", condition);
+                    // Filter từ khóa
+                    if (!keyword.isEmpty() && (p.getName() == null || !p.getName().toLowerCase().contains(keyword))) continue;
 
-        switch (sort) {
-            case "Mới nhất": query = query.orderBy("timestamp", Query.Direction.DESCENDING); break;
-            case "Giá tăng dần": query = query.orderBy("price_num", Query.Direction.ASCENDING); break;
-            case "Giá giảm dần": query = query.orderBy("price_num", Query.Direction.DESCENDING); break;
-        }
+                    // Filter category
+                    if (!category.equals("Tất cả") && (p.getCategory() == null || !p.getCategory().equals(category))) continue;
 
-        query.get().addOnSuccessListener(snapshot -> {
-            productList.clear();
-            List<Product> popularList = new ArrayList<>();
-            List<Product> nearbyList = new ArrayList<>();
+                    // Filter condition
+                    if (!condition.equals("Tất cả") && (p.getCondition() == null || !p.getCondition().equals(condition))) continue;
 
-            for (var doc : snapshot.getDocuments()) {
-                Product p = doc.toObject(Product.class);
-                if (p == null) continue;
-                p.setId(doc.getId());
-                if (!keyword.isEmpty() && !p.getName().toLowerCase().contains(keyword)) continue;
+                    // Filter khoảng giá (ĐƠN VỊ ĐỒNG, KHÔNG NHÂN 1000)
+                    try {
+                        long priceLong = Long.parseLong(p.getPrice().replaceAll("\\D", ""));
+                        if (priceLong < min || priceLong > max) continue;
+                    } catch (Exception e) {
+                        continue;
+                    }
 
-                try {
-                    long priceLong = Long.parseLong(p.getPrice().replaceAll("\\D", ""));
-                    if (priceLong < min || priceLong > max) continue;
-                } catch (Exception e) {
-                    continue;
+                    // Filter vị trí
+                    if (currentLocation != null && p.getLat() != null && p.getLng() != null) {
+                        float[] result = new float[1];
+                        Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), p.getLat(), p.getLng(), result);
+                        if (result[0] > maxDistance) continue;
+                    }
+                    filteredList.add(p);
                 }
 
-                if (currentLocation != null && doc.contains("lat") && doc.contains("lng")) {
-                    Double lat = doc.getDouble("lat");
-                    Double lng = doc.getDouble("lng");
-                    if (lat == null || lng == null) continue;
-                    float[] result = new float[1];
-                    Location.distanceBetween(currentLocation.getLatitude(), currentLocation.getLongitude(), lat, lng, result);
-                    if (result[0] <= maxDistance) nearbyList.add(p);
-                } else {
-                    productList.add(p);
+                // Sort
+                switch (sort) {
+                    case "Mới nhất":
+                        Collections.sort(filteredList, (a, b) -> {
+                            try {
+                                long ta = a.getClass().getDeclaredField("timestamp") != null ? (long) a.getClass().getDeclaredField("timestamp").get(a) : 0;
+                                long tb = b.getClass().getDeclaredField("timestamp") != null ? (long) b.getClass().getDeclaredField("timestamp").get(b) : 0;
+                                return Long.compare(tb, ta);
+                            } catch (Exception ignore) {
+                                return 0;
+                            }
+                        });
+                        break;
+                    case "Giá tăng dần":
+                        Collections.sort(filteredList, Comparator.comparingLong(p -> {
+                            try { return Long.parseLong(p.getPrice().replaceAll("\\D", "")); }
+                            catch (Exception e) { return Long.MAX_VALUE; }
+                        }));
+                        break;
+                    case "Giá giảm dần":
+                        Collections.sort(filteredList, (a, b) -> {
+                            try {
+                                long pa = Long.parseLong(a.getPrice().replaceAll("\\D", ""));
+                                long pb = Long.parseLong(b.getPrice().replaceAll("\\D", ""));
+                                return Long.compare(pb, pa);
+                            } catch (Exception e) { return 0; }
+                        });
+                        break;
+                    case "Liên quan":
+                        Collections.sort(filteredList, (a, b) -> {
+                            int scoreA = getRelevanceScore(a, keyword, currentLocation);
+                            int scoreB = getRelevanceScore(b, keyword, currentLocation);
+                            return Integer.compare(scoreB, scoreA);
+                        });
+                        break;
                 }
 
-                if (doc.contains("views") && doc.getLong("views") != null && doc.getLong("views") > 50) {
-                    popularList.add(p);
-                }
+                productList.addAll(filteredList);
+                adapter.resetToNormal(productList);
             }
+            @Override public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(SearchProductActivity.this, "Lỗi tải sản phẩm", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-            productList.addAll(nearbyList);
-            productList.addAll(popularList);
-            adapter.notifyDataSetChanged();
-        }).addOnFailureListener(e -> Toast.makeText(this, "Lỗi tải sản phẩm", Toast.LENGTH_SHORT).show());
+    // Hàm tính điểm "liên quan"
+    private int getRelevanceScore(Product p, String keyword, Location userLocation) {
+        int score = 0;
+        if (p.getName() != null && p.getName().toLowerCase().contains(keyword)) score += 10;
+        if (p.getViews() > 50) score += 3;
+        if (userLocation != null && p.getLat() != null && p.getLng() != null) {
+            float[] result = new float[1];
+            Location.distanceBetween(userLocation.getLatitude(), userLocation.getLongitude(), p.getLat(), p.getLng(), result);
+            if (result[0] < 2000) score += 5;
+        }
+        return score;
     }
 
     @Override

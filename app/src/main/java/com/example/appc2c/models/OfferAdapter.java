@@ -15,18 +15,27 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appc2c.R;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
 public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferViewHolder> {
 
+    public interface OfferActionListener {
+        void onAccept(Offer offer);
+        void onReject(Offer offer);
+        void onCounter(Offer offer);
+        void onRate(String userId);
+    }
+
     private final Context context;
     private final List<Offer> offerList;
+    private OfferActionListener actionListener;
 
-    public OfferAdapter(Context context, List<Offer> offerList) {
+    public OfferAdapter(Context context, List<Offer> offerList, OfferActionListener listener) {
         this.context = context;
         this.offerList = offerList;
+        this.actionListener = listener;
     }
 
     @NonNull
@@ -43,7 +52,6 @@ public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferViewHol
         holder.txtOfferPrice.setText("Giá đề nghị: " + String.format("%,d VNĐ", offer.getProposedPrice()));
         holder.txtOfferNote.setText("Ghi chú: " + offer.getNote() + "\nTrạng thái: " + offer.getStatus());
 
-        // Ẩn/hiện nút theo trạng thái
         if ("pending".equalsIgnoreCase(offer.getStatus())) {
             holder.btnAccept.setVisibility(View.VISIBLE);
             holder.btnReject.setVisibility(View.VISIBLE);
@@ -54,14 +62,25 @@ public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferViewHol
             holder.btnCounter.setVisibility(View.GONE);
         }
 
-        // Sự kiện: Chấp nhận
-        holder.btnAccept.setOnClickListener(v -> updateOfferStatus(offer, "accepted"));
+        holder.btnAccept.setOnClickListener(v -> {
+            if (actionListener != null) actionListener.onAccept(offer);
+        });
 
-        // Sự kiện: Từ chối
-        holder.btnReject.setOnClickListener(v -> updateOfferStatus(offer, "rejected"));
+        holder.btnReject.setOnClickListener(v -> {
+            if (actionListener != null) actionListener.onReject(offer);
+        });
 
-        // Sự kiện: Phản hồi
-        holder.btnCounter.setOnClickListener(v -> showCounterOfferDialog(offer));
+        holder.btnCounter.setOnClickListener(v -> {
+            if (actionListener != null) actionListener.onCounter(offer);
+        });
+
+        // Long click để đánh giá người dùng (ví dụ)
+        holder.itemView.setOnLongClickListener(v -> {
+            if (actionListener != null && offer.getBuyerId() != null) {
+                actionListener.onRate(offer.getBuyerId());
+            }
+            return true;
+        });
     }
 
     @Override
@@ -81,64 +100,5 @@ public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.OfferViewHol
             btnReject = itemView.findViewById(R.id.btnReject);
             btnCounter = itemView.findViewById(R.id.btnCounter);
         }
-    }
-
-    // Cập nhật trạng thái lên Firestore và làm mới danh sách
-    private void updateOfferStatus(Offer offer, String status) {
-        FirebaseFirestore.getInstance()
-                .collection("offers")
-                .document(offer.getId())
-                .update("status", status)
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(context, "Đã cập nhật trạng thái: " + status, Toast.LENGTH_SHORT).show();
-                    offer.setStatus(status); // cập nhật local
-                    notifyDataSetChanged();  // làm mới RecyclerView
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(context, "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
-
-    // Phản hồi đề nghị: mở dialog nhập giá mới
-    private void showCounterOfferDialog(Offer offer) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Phản hồi giá");
-
-        final EditText input = new EditText(context);
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setHint("Nhập giá phản hồi");
-        builder.setView(input);
-
-        builder.setPositiveButton("Gửi", (dialog, which) -> {
-            String priceStr = input.getText().toString().trim();
-            if (priceStr.isEmpty()) {
-                Toast.makeText(context, "Vui lòng nhập giá", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            try {
-                int counterPrice = Integer.parseInt(priceStr);
-
-                FirebaseFirestore.getInstance()
-                        .collection("offers")
-                        .document(offer.getId())
-                        .update("proposedPrice", counterPrice, "status", "countered")
-                        .addOnSuccessListener(unused -> {
-                            Toast.makeText(context, "Đã phản hồi với giá mới!", Toast.LENGTH_SHORT).show();
-                            offer.setProposedPrice(counterPrice);
-                            offer.setStatus("countered");
-                            notifyDataSetChanged();
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(context, "Lỗi phản hồi: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        });
-
-            } catch (NumberFormatException e) {
-                Toast.makeText(context, "Giá không hợp lệ!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        builder.setNegativeButton("Hủy", (dialog, which) -> dialog.cancel());
-        builder.show();
     }
 }

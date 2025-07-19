@@ -95,7 +95,7 @@ public class PostProductActivity extends AppCompatActivity {
     }
 
     private void setupSpinners() {
-        String[] categories = {"Chọn danh mục", "Điện thoại", "Laptop", "Thời trang", "Đồ gia dụng"};
+        String[] categories = {"Chọn danh mục", "Điện thoại", "Laptop", "Phụ kiện"};
         String[] conditions = {"Tình trạng", "Mới", "Đã sử dụng"};
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -181,7 +181,7 @@ public class PostProductActivity extends AppCompatActivity {
                 .addFormDataPart("upload_preset", UPLOAD_PRESET)
                 .build();
         Request request = new Request.Builder()
-                .url("https://api.cloudinary.com/v1_1/dgwgmsrxq/image/upload")
+                .url("https://api.cloudinary.com/v1_1/" + CLOUD_NAME + "/image/upload")
                 .post(requestBody)
                 .build();
         client.newCall(request).enqueue(new Callback() {
@@ -208,11 +208,28 @@ public class PostProductActivity extends AppCompatActivity {
 
     private void saveProduct(String cloudinaryImageUrl) {
         DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("products").push();
+        String productId = dbRef.getKey(); // <-- Đảm bảo có id
         Map<String, Object> productData = new HashMap<>();
+        productData.put("id", productId);
+
         productData.put("name", edtProductName.getText().toString());
         productData.put("description", edtDescription.getText().toString());
         productData.put("price", edtPrice.getText().toString());
-        productData.put("location", edtLocation.getText().toString());
+
+        String locationStr = edtLocation.getText().toString().trim();
+        productData.put("location", locationStr);
+
+        // Lưu lat/lng nếu nhập đúng định dạng
+        if (locationStr.matches("^-?\\d+(\\.\\d+)?\\s*,\\s*-?\\d+(\\.\\d+)?$")) {
+            String[] parts = locationStr.split(",");
+            try {
+                double lat = Double.parseDouble(parts[0].trim());
+                double lng = Double.parseDouble(parts[1].trim());
+                productData.put("lat", lat);
+                productData.put("lng", lng);
+            } catch (Exception ignored) {}
+        }
+
         productData.put("category", spinnerCategory.getSelectedItem().toString());
         productData.put("condition", spinnerCondition.getSelectedItem().toString());
         productData.put("allowNegotiation", true);
@@ -220,9 +237,12 @@ public class PostProductActivity extends AppCompatActivity {
         productData.put("tags", "dientu");
         productData.put("imageUrl", cloudinaryImageUrl);
         productData.put("sellerId", FirebaseAuth.getInstance().getUid());
+        productData.put("status", "dang_ban"); // Trạng thái mặc định
+
         Map<String, Object> imagesMap = new HashMap<>();
         imagesMap.put("0", cloudinaryImageUrl);
         productData.put("images", imagesMap);
+
         dbRef.setValue(productData).addOnSuccessListener(aVoid -> {
             Toast.makeText(this, "Đăng sản phẩm thành công!", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, MainActivity.class));
