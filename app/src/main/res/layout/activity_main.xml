@@ -71,23 +71,6 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Danh mục -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Danh mục"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:layout_marginTop="16dp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerCategories"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:orientation="horizontal"
-                android:nestedScrollingEnabled="false"
-                android:clipToPadding="false"
-                android:overScrollMode="never" />
 
             <!-- Sản phẩm nổi bật -->
             <TextView
