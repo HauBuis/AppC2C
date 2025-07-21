@@ -61,7 +61,7 @@
         <activity android:name="com.example.appc2c.products.MyOffersActivity"/>
         <activity android:name="com.example.appc2c.products.EditProductActivity"/>
         <activity android:name="com.example.appc2c.products.MyProductsActivity" />
-
+        <activity android:name="com.example.appc2c.products.NotificationActivity"/>
 
         <!-- Giao dịch -->
         <activity android:name="com.example.appc2c.models.OfferListActivity" />
