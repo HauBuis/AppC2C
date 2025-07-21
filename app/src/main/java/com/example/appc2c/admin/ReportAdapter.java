@@ -54,7 +54,7 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportView
         holder.txtReporter.setText("Người báo cáo: " + report.getReportedBy());
         holder.txtTarget.setText("ID bị tố: " + report.getTargetId());
 
-        // Hành động xử lý
+        // Xóa báo cáo
         holder.btnDelete.setOnClickListener(v -> {
             FirebaseFirestore.getInstance()
                     .collection("reports")
@@ -64,33 +64,78 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportView
                         Toast.makeText(context, "Đã xóa báo cáo", Toast.LENGTH_SHORT).show();
                         reportList.remove(position);
                         notifyItemRemoved(position);
-                    });
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(context, "Lỗi xóa báo cáo: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                    );
         });
 
+        // Gửi cảnh báo + notification + lưu vào user_warnings (toàn cục)
         holder.btnWarn.setOnClickListener(v -> {
+            // 1. Ghi vào collection con warnings của user
             FirebaseFirestore.getInstance()
                     .collection("users")
                     .document(report.getTargetId())
                     .collection("warnings")
                     .add(Map.of(
-                            "message", "Bạn đã bị cảnh báo vì vi phạm nội dung",
+                            "message", "Bạn đã bị cảnh báo vì vi phạm nội dung.",
+                            "reason", report.getReason(),
+                            "reportId", report.getId(),
                             "timestamp", FieldValue.serverTimestamp()
                     ))
-                    .addOnSuccessListener(unused -> Toast.makeText(context, "Đã ghi cảnh báo vào hồ sơ", Toast.LENGTH_SHORT).show());
+                    .addOnSuccessListener(unused ->
+                            Toast.makeText(context, "Đã ghi cảnh báo vào hồ sơ user.", Toast.LENGTH_SHORT).show()
+                    )
+                    .addOnFailureListener(e ->
+                            Toast.makeText(context, "Lỗi lưu cảnh báo vào user: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                    );
 
+            // 2. Ghi vào collection user_warnings (toàn cục, cho admin tra cứu)
+            Map<String, Object> warningData = Map.of(
+                    "userId", report.getTargetId(),
+                    "reason", report.getReason(),
+                    "message", "Bạn đã bị cảnh báo vì vi phạm nội dung.",
+                    "reportedBy", report.getReportedBy(),
+                    "reportId", report.getId(),
+                    "timestamp", FieldValue.serverTimestamp()
+            );
+            FirebaseFirestore.getInstance()
+                    .collection("user_warnings")
+                    .add(warningData)
+                    .addOnSuccessListener(unused ->
+                            Toast.makeText(context, "Đã lưu vào danh sách cảnh báo toàn hệ thống.", Toast.LENGTH_SHORT).show()
+                    )
+                    .addOnFailureListener(e ->
+                            Toast.makeText(context, "Lỗi lưu cảnh báo tổng: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                    );
+
+            // 3. Gửi notification tới user bị cảnh báo
+            sendNotification(report.getTargetId(), "Cảnh báo", "Bạn đã bị cảnh báo vì vi phạm nội dung.");
+
+            // 4. Đánh dấu báo cáo đã xử lý
             FirebaseFirestore.getInstance()
                     .collection("reports")
                     .document(report.getId())
                     .update("status", "handled");
         });
 
+        // Tạm ngưng tài khoản + notification
         holder.btnSuspend.setOnClickListener(v -> {
             FirebaseFirestore.getInstance()
                     .collection("users")
                     .document(report.getTargetId())
-                    .update("active", false)
-                    .addOnSuccessListener(unused -> Toast.makeText(context, "Đã tạm ngưng tài khoản", Toast.LENGTH_SHORT).show());
+                    .set(Map.of("active", false), com.google.firebase.firestore.SetOptions.merge())
+                    .addOnSuccessListener(unused ->
+                            Toast.makeText(context, "Đã tạm ngưng tài khoản", Toast.LENGTH_SHORT).show()
+                    )
+                    .addOnFailureListener(e ->
+                            Toast.makeText(context, "Lỗi tạm ngưng tài khoản: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                    );
 
+            // Gửi notification tới user bị tạm ngưng
+            sendNotification(report.getTargetId(), "Tạm ngưng tài khoản", "Tài khoản của bạn đã bị tạm ngưng do vi phạm.");
+
+            // Đánh dấu báo cáo đã xử lý
             FirebaseFirestore.getInstance()
                     .collection("reports")
                     .document(report.getId())
@@ -112,6 +157,20 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportView
     @Override
     public int getItemCount() {
         return reportList.size();
+    }
+
+    // Hàm gửi notification vào collection 'notifications'
+    private void sendNotification(String userId, String title, String message) {
+        Map<String, Object> noti = Map.of(
+                "userId", userId,
+                "title", title,
+                "message", message,
+                "timestamp", FieldValue.serverTimestamp(),
+                "read", false
+        );
+        FirebaseFirestore.getInstance()
+                .collection("notifications")
+                .add(noti);
     }
 
     public static class ReportViewHolder extends RecyclerView.ViewHolder {

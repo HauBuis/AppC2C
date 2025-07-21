@@ -34,6 +34,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private final Context context;
     private List<Product> productList;
     private String suggestionLabel = null;
+
     private static final int TYPE_LABEL = 0;
     private static final int TYPE_PRODUCT = 1;
 
@@ -52,21 +53,20 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.productList = products;
     }
 
-    /*** Hàm set list gợi ý + tiêu đề ***/
+    /*** Set list sản phẩm kèm label gợi ý ***/
     public void setSuggestedList(List<Product> suggestions, String label) {
         this.productList = suggestions;
         this.suggestionLabel = label;
         notifyDataSetChanged();
     }
 
-    /*** Nếu quay lại tìm kiếm, reset lại label ***/
+    /*** Reset về danh sách bình thường ***/
     public void resetToNormal(List<Product> products) {
         this.productList = products;
         this.suggestionLabel = null;
         notifyDataSetChanged();
     }
 
-    /*** Đếm số item: nếu có label thì cộng 1 để show label ở đầu list ***/
     @Override
     public int getItemCount() {
         return productList == null ? 0 : (suggestionLabel == null ? productList.size() : productList.size() + 1);
@@ -127,7 +127,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             tvInteractions = itemView.findViewById(R.id.tvInteractions);
             btnAddToCart = itemView.findViewById(R.id.btnAddToCart);
             btnEdit = itemView.findViewById(R.id.btnEdit);
-            btnViewOffers = itemView.findViewById(R.id.btnViewOffers); // <-- Button xem đề nghị
+            btnViewOffers = itemView.findViewById(R.id.btnViewOffers);
             spinnerStatus = itemView.findViewById(R.id.spinnerStatus);
         }
 
@@ -138,12 +138,8 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             String statusText = "Đang bán";
             if (product.getStatus() != null) {
                 switch (product.getStatus()) {
-                    case "da_ban":
-                        statusText = "Đã bán";
-                        break;
-                    case "tam_dung":
-                        statusText = "Tạm dừng";
-                        break;
+                    case "da_ban": statusText = "Đã bán"; break;
+                    case "tam_dung": statusText = "Tạm dừng"; break;
                 }
             }
             tvStatus.setText(statusText);
@@ -162,17 +158,19 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
 
             String currentUserId = FirebaseAuth.getInstance().getCurrentUser() != null
-                    ? FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
+                    ? FirebaseAuth.getInstance().getCurrentUser().getUid()
+                    : null;
 
-            if (currentUserId != null && product.getSellerId() != null &&
-                    product.getSellerId().equals(currentUserId)) {
+            boolean isSeller = currentUserId != null && product.getSellerId() != null
+                    && product.getSellerId().equals(currentUserId);
+
+            if (isSeller) {
                 btnEdit.setVisibility(View.VISIBLE);
-                btnViewOffers.setVisibility(View.VISIBLE); // Hiện nút "Xem đề nghị"
+                btnViewOffers.setVisibility(View.VISIBLE);
                 btnAddToCart.setVisibility(View.GONE);
                 tvStatus.setVisibility(View.VISIBLE);
                 spinnerStatus.setVisibility(View.GONE);
 
-                // Xử lý khi bấm "Xem đề nghị"
                 btnViewOffers.setOnClickListener(v -> {
                     Intent intent = new Intent(context, OfferListActivity.class);
                     intent.putExtra("productId", product.getId());
@@ -184,9 +182,11 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 btnViewOffers.setVisibility(View.GONE);
                 tvStatus.setVisibility(View.VISIBLE);
                 spinnerStatus.setVisibility(View.GONE);
+                // Giữ nguyên icon giỏ hàng luôn hiển thị
+                btnAddToCart.setVisibility(View.VISIBLE);
             }
 
-            // Đếm đề nghị từ Firestore
+            // Đếm số đề nghị từ Firestore
             FirebaseFirestore.getInstance()
                     .collection("offers")
                     .whereEqualTo("productId", product.getId())
@@ -197,7 +197,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     });
 
             itemView.setOnClickListener(v -> {
-                // Tăng lượt xem khi nhấn vào sản phẩm
+                // Tăng lượt xem trong Realtime DB
                 FirebaseDatabase.getInstance().getReference("products")
                         .child(product.getId())
                         .child("views")
@@ -213,18 +213,18 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     Toast.makeText(context, "Bạn cần đăng nhập để thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                // Tăng tương tác khi thêm vào giỏ
+                // Tăng tương tác sản phẩm trong Realtime DB
                 FirebaseDatabase.getInstance().getReference("products")
                         .child(product.getId())
                         .child("interactions")
                         .setValue(product.getInteractions() + 1);
 
+                // Thêm vào giỏ hàng trong Firestore
                 Map<String, Object> cartItem = new HashMap<>();
                 cartItem.put("productId", product.getId());
                 cartItem.put("name", product.getName());
                 cartItem.put("price", product.getPrice());
-                cartItem.put("image", product.getImageUrl() != null ? product.getImageUrl() : "");
+                cartItem.put("imageUrl", product.getImageUrl() != null ? product.getImageUrl() : "");
                 cartItem.put("timestamp", System.currentTimeMillis());
 
                 FirebaseFirestore.getInstance()
@@ -233,10 +233,8 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         .collection("cart")
                         .document(product.getId())
                         .set(cartItem)
-                        .addOnSuccessListener(aVoid ->
-                                Toast.makeText(context, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show())
-                        .addOnFailureListener(e ->
-                                Toast.makeText(context, "Lỗi khi thêm vào giỏ", Toast.LENGTH_SHORT).show());
+                        .addOnSuccessListener(aVoid -> Toast.makeText(context, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> Toast.makeText(context, "Lỗi khi thêm vào giỏ", Toast.LENGTH_SHORT).show());
             });
 
             btnEdit.setOnClickListener(v -> {
@@ -248,7 +246,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 context.startActivity(intent);
             });
 
-            // --- Quản lý trạng thái ---
+            // Quản lý Spinner trạng thái sản phẩm
             Map<String, String> displayToCode = new HashMap<>();
             displayToCode.put("Đang bán", "dang_ban");
             displayToCode.put("Tạm dừng", "tam_dung");
@@ -287,8 +285,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     tvStatus.setText(selectedDisplay);
                                     Toast.makeText(context, "Cập nhật trạng thái thành công", Toast.LENGTH_SHORT).show();
                                 })
-                                .addOnFailureListener(e ->
-                                        Toast.makeText(context, "Lỗi khi cập nhật trạng thái", Toast.LENGTH_SHORT).show());
+                                .addOnFailureListener(e -> Toast.makeText(context, "Lỗi khi cập nhật trạng thái", Toast.LENGTH_SHORT).show());
                     }
                 }
                 @Override public void onNothingSelected(AdapterView<?> parent) {}

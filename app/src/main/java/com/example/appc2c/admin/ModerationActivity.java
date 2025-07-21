@@ -1,8 +1,6 @@
 package com.example.appc2c.admin;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -11,56 +9,48 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appc2c.R;
-import com.example.appc2c.products.Product;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.example.appc2c.models.User;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ModerationActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
-    private ModerationAdapter adapter;
-    private ArrayList<Product> productList;
-    private DatabaseReference productsRef;
+    private RecyclerView recyclerUsers;
+    private UserManageAdapter userManageAdapter;
+    private final List<User> userList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moderation);
 
-        recyclerView = findViewById(R.id.recyclerModeration);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        productList = new ArrayList<>();
-        adapter = new ModerationAdapter(this, productList);
-        recyclerView.setAdapter(adapter);
+        recyclerUsers = findViewById(R.id.recyclerModeration);
+        recyclerUsers.setLayoutManager(new LinearLayoutManager(this));
 
-        productsRef = FirebaseDatabase.getInstance().getReference("products");
+        userManageAdapter = new UserManageAdapter(this, userList);
+        recyclerUsers.setAdapter(userManageAdapter);
 
-        loadProducts();
+        loadUsers();
     }
 
-    private void loadProducts() {
-        productsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                productList.clear();
-                for (DataSnapshot snap : snapshot.getChildren()) {
-                    Product p = snap.getValue(Product.class);
-                    if (p != null) {
-                        productList.add(p);
+    private void loadUsers() {
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    userList.clear();
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        User user = doc.toObject(User.class);
+                        user.setId(doc.getId());
+                        userList.add(user);
                     }
-                }
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(ModerationActivity.this, "Không tải được sản phẩm", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    userManageAdapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Lỗi tải danh sách user", Toast.LENGTH_SHORT).show()
+                );
     }
 }

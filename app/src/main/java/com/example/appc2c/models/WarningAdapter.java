@@ -10,8 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appc2c.R;
+import com.google.firebase.Timestamp;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class WarningAdapter extends RecyclerView.Adapter<WarningAdapter.WarningViewHolder> {
 
@@ -33,8 +37,26 @@ public class WarningAdapter extends RecyclerView.Adapter<WarningAdapter.WarningV
     @Override
     public void onBindViewHolder(@NonNull WarningViewHolder holder, int position) {
         Warning warning = warningList.get(position);
-        holder.txtReason.setText("Lý do: " + warning.getReason());
-        holder.txtTimestamp.setText("Thời gian: " + warning.getTimestamp());
+
+        // Lý do (nếu không có reason thì lấy message)
+        holder.txtReason.setText("Lý do: " +
+                (warning.getReason() != null && !warning.getReason().isEmpty() ? warning.getReason() : warning.getMessage())
+        );
+
+        // User ID
+        holder.txtUser.setText("User ID: " + (warning.getUserId() != null ? warning.getUserId() : ""));
+
+        // Định dạng thời gian đẹp, ưu tiên timestamp (Firestore), nếu không lấy timeMillis (Realtime DB)
+        String timeString = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault());
+        if (warning.getTimestamp() != null) {
+            Date date = warning.getTimestamp().toDate();
+            timeString = sdf.format(date);
+        } else if (warning.getTimeMillis() > 0) {
+            Date date = new Date(warning.getTimeMillis());
+            timeString = sdf.format(date);
+        }
+        holder.txtTimestamp.setText("Thời gian: " + timeString);
     }
 
     @Override
@@ -43,12 +65,13 @@ public class WarningAdapter extends RecyclerView.Adapter<WarningAdapter.WarningV
     }
 
     public static class WarningViewHolder extends RecyclerView.ViewHolder {
-        TextView txtReason, txtTimestamp;
+        TextView txtReason, txtTimestamp, txtUser;
 
         public WarningViewHolder(@NonNull View itemView) {
             super(itemView);
             txtReason = itemView.findViewById(R.id.txtWarningReason);
             txtTimestamp = itemView.findViewById(R.id.txtWarningTimestamp);
+            txtUser = itemView.findViewById(R.id.txtWarningUser);
         }
     }
 }

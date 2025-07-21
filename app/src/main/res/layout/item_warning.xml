@@ -18,6 +18,14 @@
         android:textColor="@android:color/black" />
 
     <TextView
+        android:id="@+id/txtWarningUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="User ID"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray" />
+
+    <TextView
         android:id="@+id/txtWarningTimestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

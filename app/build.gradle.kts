@@ -68,4 +68,6 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation (libs.material)
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
 }

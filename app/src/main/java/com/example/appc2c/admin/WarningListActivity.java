@@ -39,7 +39,7 @@ public class WarningListActivity extends AppCompatActivity {
 
     private void loadWarningsFromFirestore() {
         FirebaseFirestore.getInstance()
-                .collection("warnings")
+                .collection("user_warnings")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     warningList.clear();

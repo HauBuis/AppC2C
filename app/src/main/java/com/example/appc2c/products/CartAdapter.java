@@ -2,12 +2,14 @@ package com.example.appc2c.products;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +24,15 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     private final Context context;
     private final List<Product> cartItems;
     private final Runnable onSelectionChanged;
+    private OnItemActionListener actionListener;
+
+    public interface OnItemActionListener {
+        void onDeleteClick(Product product, int position);
+    }
+
+    public void setOnItemActionListener(OnItemActionListener listener) {
+        this.actionListener = listener;
+    }
 
     public CartAdapter(Context context, List<Product> cartItems, Runnable onSelectionChanged) {
         this.context = context;
@@ -33,6 +44,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         CheckBox cbSelect;
         TextView tvName, tvPrice;
         ImageView imgProduct;
+        ImageButton btnDelete;
 
         public CartViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -40,6 +52,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             tvName = itemView.findViewById(R.id.tvName);
             tvPrice = itemView.findViewById(R.id.tvPrice);
             imgProduct = itemView.findViewById(R.id.imgProduct);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
 
@@ -54,8 +67,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     @Override
     public void onBindViewHolder(@NonNull CartViewHolder holder, int position) {
         Product item = cartItems.get(position);
+        Log.d("CartAdapter", "Load image url: " + item.getImageUrl());
+
         holder.tvName.setText(item.getName());
-        holder.tvPrice.setText(item.getPrice() + "đ");
+        holder.tvPrice.setText(item.getPrice() + " đ");
 
         if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
             Glide.with(context)
@@ -69,10 +84,15 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
         holder.cbSelect.setOnCheckedChangeListener(null);
         holder.cbSelect.setChecked(item.isSelected());
-
         holder.cbSelect.setOnCheckedChangeListener((buttonView, isChecked) -> {
             item.setSelected(isChecked);
             onSelectionChanged.run();
+        });
+
+        holder.btnDelete.setOnClickListener(v -> {
+            if (actionListener != null) {
+                actionListener.onDeleteClick(item, position);
+            }
         });
     }
 

@@ -1,6 +1,7 @@
 package com.example.appc2c.login;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -52,7 +53,6 @@ public class LoginActivity extends AppCompatActivity {
 
         btnLogin.setEnabled(false);
 
-        // Vô hiệu hóa nút login nếu thiếu thông tin
         TextWatcher textWatcher = new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -79,14 +79,6 @@ public class LoginActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(v -> startActivity(new Intent(this, RegisterActivity.class)));
         btnLogin.setOnClickListener(v -> handleLogin());
         tvForgotPass.setOnClickListener(v -> startActivity(new Intent(this, ForgotPasswordActivity.class)));
-
-//        // Google login config
-//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                .requestIdToken(getString(R.string.default_web_client_id)) // từ google-services.json
-//                .requestEmail()
-//                .build();
-//        googleSignInClient = GoogleSignIn.getClient(this, gso);
-//        btnGGLogin.setOnClickListener(v -> startActivityForResult(googleSignInClient.getSignInIntent(), RC_SIGN_IN));
     }
 
     private void handleLogin() {
@@ -127,6 +119,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (doc.exists()) {
                         Boolean isActive = doc.getBoolean("active");
                         String role = doc.getString("role");
+                        String email = doc.getString("email");
 
                         if (Boolean.FALSE.equals(isActive)) {
                             FirebaseAuth.getInstance().signOut();
@@ -135,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                             // Gửi yêu cầu kích hoạt lại
                             Map<String, Object> request = new HashMap<>();
                             request.put("uid", uid);
-                            request.put("email", doc.getString("email"));
+                            request.put("email", email);
                             request.put("type", "reactivate_account");
                             request.put("timestamp", com.google.firebase.firestore.FieldValue.serverTimestamp());
 
@@ -146,6 +139,9 @@ public class LoginActivity extends AppCompatActivity {
                                     .addOnFailureListener(e -> Toast.makeText(this, "Lỗi gửi yêu cầu: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                             return;
                         }
+
+                        // Lưu quyền vào SharedPreferences
+                        saveUserRole(role);
 
                         Toast.makeText(this, "Đăng nhập thành công (" + role + ")", Toast.LENGTH_SHORT).show();
                         if ("admin".equals(role)) {
@@ -160,6 +156,14 @@ public class LoginActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Lỗi phân quyền: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    // Lưu role vào SharedPreferences
+    private void saveUserRole(String role) {
+        getSharedPreferences("user_info", MODE_PRIVATE)
+                .edit()
+                .putString("role", role)
+                .apply();
     }
 
     @Override

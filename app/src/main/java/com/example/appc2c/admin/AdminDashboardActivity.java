@@ -2,6 +2,7 @@ package com.example.appc2c.admin;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appc2c.R;
+import com.example.appc2c.products.MainActivity;
 import com.example.appc2c.profile.ProfileActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -30,6 +32,17 @@ public class AdminDashboardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // 1. Chặn user thường vào dashboard admin
+        SharedPreferences prefs = getSharedPreferences("user_info", MODE_PRIVATE);
+        String role = prefs.getString("role", "user");
+        if (!"admin".equals(role)) {
+            // Nếu không phải admin → chuyển về MainActivity (user)
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_admin_dashboard);
 
         initViews();
@@ -66,7 +79,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Lỗi tải danh sách báo cáo", Toast.LENGTH_SHORT).show());
-
     }
 
     private void setupBottomNav() {

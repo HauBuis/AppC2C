@@ -1,12 +1,15 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
-        android:id="@+id/action_search"
-        android:icon="@android:drawable/ic_menu_search"
-        android:title="Tìm kiếm"
-        android:showAsAction="ifRoom" />
+        android:id="@+id/menu_notification"
+        android:title="Thông báo"
+        android:icon="@drawable/ic_notification"
+        app:showAsAction="ifRoom" />
+
     <item
-        android:id="@+id/action_cart"
-        android:icon="@android:drawable/ic_menu_view"
+        android:id="@+id/menu_cart"
         android:title="Giỏ hàng"
-        android:showAsAction="ifRoom" />
+        android:icon="@drawable/ic_cart"
+        app:showAsAction="ifRoom" />
 </menu>

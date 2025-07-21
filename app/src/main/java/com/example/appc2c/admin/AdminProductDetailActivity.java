@@ -102,10 +102,11 @@ public class AdminProductDetailActivity extends AppCompatActivity {
         String warningId = warningsRef.push().getKey();
         if (warningId == null) return;
 
+        // Dùng constructor với timeMillis cho Realtime Database
         Warning warning = new Warning(
                 warningId,
                 "Sản phẩm '" + product.getName() + "' bị cảnh báo bởi quản trị viên.",
-                System.currentTimeMillis()
+                System.currentTimeMillis() // Lưu vào trường timeMillis
         );
 
         warningsRef.child(warningId).setValue(warning)
